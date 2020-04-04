@@ -17,10 +17,15 @@ class Dota:
 
     @staticmethod
     def request_all_heroes():
+        # requesting for all the hero data, I couldnt find a way to ask for a specific hero
         link = "https://api.opendota.com/api/heroes"
         r = requests.get(link)
-        heroes_raw = json.loads(r.text)
-        return heroes_raw
+        # checks if request is 200 ok
+        if r.status_code == 200:
+            heroes_raw = json.loads(r.text)
+            return heroes_raw
+        else:
+            raise ValueError("Bad request in all_heroes")
 
     @staticmethod
     def request_match_up(id):
@@ -30,7 +35,7 @@ class Dota:
             all_match_up = json.loads(all_match_up.text)
             return all_match_up
         else:
-            raise ValueError("Bad request")
+            raise ValueError("Bad request in match_ups")
 
     @staticmethod
     def match_up_counters(hero_id):
@@ -53,14 +58,14 @@ class Dota:
 
     @staticmethod
     def match_hero_per_name(hero, all_heroes):
-        padrao = "[a-z,A-Z]{2,15}\s[a-z,A-Z]{0,15}"
+        # I'm using this regular expression to search for a hero name
+        padrao = "[a-z,A-Z]{2,15}\s{0,1}[a-z,A-Z]{0,15}"
         search = re.search(padrao, hero)
         if search:
-            print(search.string)
             search = search.string
             for heroes in all_heroes:
-                print(heroes['localized_name'].lower())
-                if heroes['localized_name'].lower() == search.lower():
+                # so it's easier to get a match
+                if heroes['localized_name'].lower().replace(' ', '') == search.lower().replace(' ', ''):
                     return heroes
         else:
             raise NameError("No search result")
@@ -109,7 +114,7 @@ class Dota:
         info['kills'] = player['kills']
         info['level'] = player['level']
         info['team'] = 'radiant' if player['isRadiant'] else 'dire'
-        #info['lane_efc'] = player['lane_efficiency_pct']  if the match inst parced, this breaks eveything
+        # info['lane_efc'] = player['lane_efficiency_pct']  if the match inst parced, this breaks eveything
         info['hero_damage'] = player['hero_damage']
         info['tower_damage'] = player['tower_damage']
         return info
@@ -199,10 +204,10 @@ class Dota:
                 first = player
         return f"{first['hero']} dealt {first['tower_damage']} damage to towers!"
 
-    def high_scores(self, opt=None):
+    def high_scores(self, all_h=False):
         options = [self.highest_amount_of_kills, self.highest_nw, self.highest_damage, self.first_blood]
-        if opt:
-            return options[opt]
+        if all_h:
+            return options
         else:
             rand_num = random.randint(0, 3)
             return options[rand_num]
@@ -212,17 +217,20 @@ class Dota:
         line = f"{'radiant'.upper() if self.winner == 'radiant'else 'radiant'.title()} {self.radiant_score} " \
                 f": {self.dire_score} {'dire'.upper() if self.winner == 'dire' else 'dire'.title()}\n" \
                 f"Duration:\t{self.duration}\n" \
-                f"{self.high_scores()}\n"\
+                f"{self.high_scores(True)}\n"\
                 f"{self.OpenDota}"
         return line
 
 
 def request_data(id):
+    # requesting parse
     requests.post(f" https://api.opendota.com/api/request/{id} ", data={'match': id})
+    # requesting for match details
     link = f"https://api.opendota.com/api/matches/{id}"
     r = requests.get(link)
+    # checking if the request worked (200 ok)
     if r.status_code == 200:
         data = dict(json.loads(r.text))
         return data
     else:
-        raise ValueError('Bad Request')
+        raise ValueError('Bad Request in request_data')

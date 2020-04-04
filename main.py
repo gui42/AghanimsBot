@@ -41,7 +41,7 @@ def flip_coin(update, context):
 
 
 def start(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot that can get details of dota 2 matches")
+    context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot that can get details of Dota 2 matches")
 
 
 def creditos(update, context):
