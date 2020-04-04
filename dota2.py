@@ -5,6 +5,7 @@ import re
 
 
 class Dota:
+
     def __init__(self, id):
         self.__data = request_data(id)
         self.id = id
@@ -38,7 +39,7 @@ class Dota:
             raise ValueError("Bad request in match_ups")
 
     @staticmethod
-    def match_up_counters(hero_id):
+    def match_up(hero_id):
         all_heroes = Dota.request_all_heroes()
         if str(hero_id).isdecimal():
             match_ups = Dota.request_match_up(hero_id)
@@ -46,15 +47,23 @@ class Dota:
         else:
             this_hero = Dota.match_hero_per_name(hero_id, all_heroes)
             match_ups = Dota.request_match_up(this_hero['id'])
-        relevant_macth_ups = match_ups[:len(match_ups) - 100]
-        for matchup in relevant_macth_ups:
+
+        relevant_match_ups = []
+        for hero in match_ups:
+            if hero['games_played'] > 100 and hero['wins'] < (hero['games_played']/2):
+                hero['odds'] = hero['odds'] = (1 - (hero['wins']/hero['games_played']))*100
+                relevant_match_ups.append(hero)
+
+
+        #relevant_macth_ups = match_ups[:len(match_ups) - 100]
+        for matchup in relevant_match_ups:
             hero = Dota.hero_info(matchup['hero_id'], all_heroes)
             matchup['hero'] = hero['localized_name']
             matchup['attack_type'] = hero['attack_type']
             matchup['roles'] = hero['roles']
             matchup['primary_attr'] = hero['primary_attr']
 
-        return Dota.print_match_up(this_hero, relevant_macth_ups)
+        return Dota.print_match_up(this_hero, relevant_match_ups)
 
     @staticmethod
     def match_hero_per_name(hero, all_heroes):
@@ -64,7 +73,7 @@ class Dota:
         if search:
             search = search.string
             for heroes in all_heroes:
-                # so it's easier to get a match
+                # so it's easier to get a match:
                 if heroes['localized_name'].lower().replace(' ', '') == search.lower().replace(' ', ''):
                     return heroes
         else:
@@ -72,14 +81,11 @@ class Dota:
 
     @staticmethod
     def print_match_up(this_hero, matchup):
+        long_string = f"Macth ups for {this_hero['localized_name']}:\n"
+        for hero in matchup:
+            long_string = long_string + f"{hero['hero']}: {hero['odds']:02.0f}%\n"
 
-        first_line = f"Match ups for {this_hero['localized_name']}\n" \
-                     f"{matchup[0]['hero']}: {int(matchup[0]['wins'])/int(matchup[0]['games_played'])*100:02.0f}%\n" \
-                     f"{matchup[1]['hero']}: {int(matchup[1]['wins'])/int(matchup[1]['games_played'])*100:02.0f}%\n" \
-                     f"{matchup[2]['hero']}: {int(matchup[2]['wins'])/int(matchup[2]['games_played'])*100:02.0f}%\n" \
-                     f"{matchup[3]['hero']}: {int(matchup[3]['wins'])/int(matchup[3]['games_played'])*100:02.0f}%\n"\
-                     f"{matchup[4]['hero']}: {int(matchup[4]['wins'])/int(matchup[4]['games_played'])*100:02.0f}%\n"
-        return first_line
+        return long_string
 
     @staticmethod
     def hero_info(hero_id, all_heroes):
