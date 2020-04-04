@@ -50,8 +50,10 @@ def creditos(update, context):
 
 
 def matchup(update, context):
+    print(context.args)
     text = "".join(context.args)
-    update.message.reply_text(Dota.print_machup(text))
+    print(text)
+    update.message.reply_text(Dota.match_up_counters(text))
 
 
 def start_callback(update, context):

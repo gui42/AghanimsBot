@@ -2,96 +2,89 @@ import requests
 import json
 import random
 import re
-import datetime
 
 
 class Dota:
     def __init__(self, id):
         self.__data = request_data(id)
         self.id = id
-        self.heroes_raw = self.request_heroes()
+        self.heroes_raw = self.request_all_heroes()
         self.info_players = self.gather_info()
         self.radiant, self.dire = self.teams()
         self.radiant_score = self.__data['radiant_score']
         self.dire_score = self.__data['dire_score']
-        self.dotabuff = f"https://www.dotabuff.com/matches/{id}"
+        self.OpenDota = f"https://www.opendota.com/matches/{id}"
 
     @staticmethod
-    def get_match_id_from_user_input(id):
-        standard = "[0-9]{10}"
-        match_id = re.search(standard, id)
-        if not match_id:
-            raise ValueError("Invalid match ID")
-        else:
-            return match_id
-
-    @staticmethod
-    def request_heroes():
+    def request_all_heroes():
         link = "https://api.opendota.com/api/heroes"
         r = requests.get(link)
         heroes_raw = json.loads(r.text)
         return heroes_raw
 
     @staticmethod
-    def get_matchup(hero_id):
-        hero = Dota.get_hero(hero_id)
-        if not hero:
-            raise ValueError("not possible to get hero")
-        print(hero_id)
-        link = f"https://api.opendota.com/api/heroes/{hero_id}/matchups"
-        r = requests.get(link)
-        matchup_all = json.loads(r.text)
-        heroes = Dota.request_heroes()
-        matchup = []
-        for match in range(0, 5):
-            for hero in range(0, len(heroes) - 1):
-                if matchup_all[match]['hero_id'] == heroes[hero]['id']:
-                    this = matchup_all[match]
-                    that = heroes[hero]
-                    odds = int(this['wins']) / int(this['games_played'])
-                    odds = f"{(odds * 100):02.0f}%"
-                    matchup.append({'hero': that['localized_name'], 'odds': odds})
-                if heroes[hero]['id'] == hero_id:
-                    this_hero = heroes[hero]
-        return matchup
-
-    @staticmethod
-    def get_hero(hero_id):
-        hero_id = str(hero_id)
-        standard = "[0-9]{1,3}"
-        id = re.search(standard, hero_id)
-        if id:
-            id = id.string
-            all_heroes = Dota.request_heroes()
-            for hero in all_heroes:
-                if id == str(hero['id']):
-                    return [hero]
+    def request_match_up(id):
+        link = f"https://api.opendota.com/api/heroes/{id}/matchups"
+        all_match_up = requests.get(link)
+        if all_match_up.status_code == 200:
+            all_match_up = json.loads(all_match_up.text)
+            return all_match_up
         else:
-            standard = "[a-z,A-Z]{2,10}\s{0,1}[a-z,A-Z]{0,20}"
-            id = re.search(standard, hero_id)
-            if id:
-                id = id.string
-                all_heroes = Dota.request_heroes()
-                for hero in all_heroes:
-                    if id.lower() == hero['localized_name'].lower():
-                        return hero
+            raise ValueError("Bad request")
 
     @staticmethod
-    def print_machup(hero_id):
-        hero_id = str(hero_id)
-        this = Dota.get_hero(hero_id)
-        matchup = Dota.get_matchup(hero_id)
-        lines = []
-        first_line = f"{this} match ups:\n"
-        lines.append(first_line)
-        for opponent in matchup:
-            line = f"{opponent['hero']}  {opponent['odds']}\n"
-            lines.append(line)
+    def match_up_counters(hero_id):
+        all_heroes = Dota.request_all_heroes()
+        if str(hero_id).isdecimal():
+            match_ups = Dota.request_match_up(hero_id)
+            this_hero = Dota.hero_info(hero_id, all_heroes)
+        else:
+            this_hero = Dota.match_hero_per_name(hero_id, all_heroes)
+            match_ups = Dota.request_match_up(this_hero['id'])
+        relevant_macth_ups = match_ups[:len(match_ups) - 100]
+        for matchup in relevant_macth_ups:
+            hero = Dota.hero_info(matchup['hero_id'], all_heroes)
+            matchup['hero'] = hero['localized_name']
+            matchup['attack_type'] = hero['attack_type']
+            matchup['roles'] = hero['roles']
+            matchup['primary_attr'] = hero['primary_attr']
 
-        matchup = f"{lines[0]}{lines[1]}{lines[2]}{lines[3]}{lines[4]}"
-        return  matchup
+        return Dota.print_match_up(this_hero, relevant_macth_ups)
 
-    def get_heroes(self):
+    @staticmethod
+    def match_hero_per_name(hero, all_heroes):
+        padrao = "[a-z,A-Z]{2,15}\s[a-z,A-Z]{0,15}"
+        search = re.search(padrao, hero)
+        if search:
+            print(search.string)
+            search = search.string
+            for heroes in all_heroes:
+                print(heroes['localized_name'].lower())
+                if heroes['localized_name'].lower() == search.lower():
+                    return heroes
+        else:
+            raise NameError("No search result")
+
+    @staticmethod
+    def print_match_up(this_hero, matchup):
+
+        first_line = f"Match ups for {this_hero['localized_name']}\n" \
+                     f"{matchup[0]['hero']}: {int(matchup[0]['wins'])/int(matchup[0]['games_played'])*100:02.0f}%\n" \
+                     f"{matchup[1]['hero']}: {int(matchup[1]['wins'])/int(matchup[1]['games_played'])*100:02.0f}%\n" \
+                     f"{matchup[2]['hero']}: {int(matchup[2]['wins'])/int(matchup[2]['games_played'])*100:02.0f}%\n" \
+                     f"{matchup[3]['hero']}: {int(matchup[3]['wins'])/int(matchup[3]['games_played'])*100:02.0f}%\n"\
+                     f"{matchup[4]['hero']}: {int(matchup[4]['wins'])/int(matchup[4]['games_played'])*100:02.0f}%\n"
+        return first_line
+
+    @staticmethod
+    def hero_info(hero_id, all_heroes):
+        for hero in all_heroes:
+            if hero_id == hero["id"]:
+                this_hero = hero
+                return this_hero
+
+    @property
+    def heroes(self):
         heroes = []
         for hero in self.__data['picks_bans']:
             if hero['is_pick']:
@@ -167,12 +160,12 @@ class Dota:
 
     @property
     def first_blood(self):
-        sec =int(self.__data['first_blood_time'])
+        sec = int(self.__data['first_blood_time'])
         min = 0
         while sec > 60:
             sec -= 60
             min += 1
-        return f'First blood time: {min}:{sec}'
+        return f'First blood time: {min:02d}:{sec:02d}'
 
     @property
     def highest_nw(self):
@@ -206,7 +199,7 @@ class Dota:
                 first = player
         return f"{first['hero']} dealt {first['tower_damage']} damage to towers!"
 
-    def high_scores(self, opt= None):
+    def high_scores(self, opt=None):
         options = [self.highest_amount_of_kills, self.highest_nw, self.highest_damage, self.first_blood]
         if opt:
             return options[opt]
@@ -220,7 +213,7 @@ class Dota:
                 f": {self.dire_score} {'dire'.upper() if self.winner == 'dire' else 'dire'.title()}\n" \
                 f"Duration:\t{self.duration}\n" \
                 f"{self.high_scores()}\n"\
-                f"{self.dotabuff}"
+                f"{self.OpenDota}"
         return line
 
 
