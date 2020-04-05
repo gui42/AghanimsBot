@@ -49,6 +49,12 @@ def creditos(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text=string)
 
 
+def last_match(update, context):
+    text = ''.join(context.args)
+    last_match = Dota.last_game(text)
+    update.message.reply_text(last_match)
+
+
 def matchup(update, context):
     text = "".join(context.args)
     update.message.reply_text(Dota.match_up(text))
@@ -68,13 +74,15 @@ def start_callback(update, context):
 
 
 # start and add handlers
+last_match_handler = CommandHandler('lastmatch', last_match)
 creditos_handler = CommandHandler('creditos', creditos)
 flip_coin_handler = CommandHandler('flip', flip_coin)
 pos_dota_handler = CommandHandler('dotapos', pos_dota)
 start_handler = CommandHandler('start', start)
 
+dispatcher.add_handler(last_match_handler)
 dispatcher.add_handler(CommandHandler('matchup', matchup))
-dispatcher.add_handler(CommandHandler("callback", start_callback))
+dispatcher.add_handler(CommandHandler("match", start_callback))
 dispatcher.add_handler(CommandHandler("roll", roll))
 dispatcher.add_handler(creditos_handler)
 dispatcher.add_handler(flip_coin_handler)

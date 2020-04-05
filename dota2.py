@@ -131,6 +131,7 @@ class Dota:
         info['deaths'] = player['deaths']
         info['assists'] = player['assists']
         info['kills'] = player['kills']
+        info['last_hits'] = player['last_hits']
         info['level'] = player['level']
         info['team'] = 'radiant' if player['isRadiant'] else 'dire'
         # info['lane_efc'] = player['lane_efficiency_pct']  if the match inst parced, this breaks eveything
@@ -153,6 +154,52 @@ class Dota:
             else:
                 dire.append(player)
         return radiant, dire
+
+    @staticmethod
+    def request_player_recent_matches(steam32):
+        link = f"https://api.opendota.com/api/players/{steam32}/recentMatches"
+        last_games = requests.get(link)
+        if last_games.status_code == 200:
+            last_games = json.loads(last_games.text)
+            return last_games
+        else:
+            raise ValueError("Bad recente matches request")
+
+
+
+    @staticmethod
+    def last_game(steam32):
+        last_games = Dota.request_player_recent_matches(steam32)
+        last_match = last_games[0]
+        last_match_id = last_match['match_id']
+        game = Dota(last_match_id)
+        this_player = {}
+        for player in game.info_players:
+            if player['id'] == last_match['hero_id']:
+                this_player['hero_id'] = player['id']
+                this_player['hero'] = player['hero']
+                this_player['kills'] = player['kills']
+                this_player['assists'] = player['assists']
+                this_player['deaths'] = player['deaths']
+                this_player['gold_per_min'] = player['gold_per_min']
+                this_player['xp_per_min'] = player['xp_per_min']
+                this_player['total_gold'] = player['total_gold']
+                this_player['level'] = player['level']
+                this_player['last_hits'] = player['last_hits']
+                this_player['tower_damage'] = player['tower_damage']
+                this_player['hero_damage'] = player['hero_damage']
+                this_player['team'] = player['team']
+                this_player['party_size'] = last_match['party_size']
+
+        #formating these info to return as a 'game story':
+        big_string = f"{this_player['hero'].title()}  played for the {this_player['team']}:\n" \
+                     f"{this_player['kills']}/{this_player['deaths']}/{this_player['assists']}" \
+                     f"\tGPM: {this_player['gold_per_min']} XPM: {this_player['xp_per_min']}" \
+                     f" Last hits: {this_player['last_hits']}\n" \
+                     f"Net Worth: {this_player['total_gold']} " \
+                     f"doing a total {this_player['hero_damage']} hero damage!\n" \
+                     f"The game had a duration of {game.duration} and {game.winner.title()} won!"
+        return big_string
 
     @property
     def players(self):
