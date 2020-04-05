@@ -50,12 +50,10 @@ class Dota:
 
         relevant_match_ups = []
         for hero in match_ups:
-            if hero['games_played'] > 100 and hero['wins'] < (hero['games_played']/2):
-                hero['odds'] = hero['odds'] = (1 - (hero['wins']/hero['games_played']))*100
+            if hero['games_played'] > 25 and hero['wins'] < (hero['games_played']/2):
+                hero['odds'] = f"{((1 - (hero['wins']/hero['games_played']))*100):02.0f}"
                 relevant_match_ups.append(hero)
 
-
-        #relevant_macth_ups = match_ups[:len(match_ups) - 100]
         for matchup in relevant_match_ups:
             hero = Dota.hero_info(matchup['hero_id'], all_heroes)
             matchup['hero'] = hero['localized_name']
@@ -63,7 +61,19 @@ class Dota:
             matchup['roles'] = hero['roles']
             matchup['primary_attr'] = hero['primary_attr']
 
-        return Dota.print_match_up(this_hero, relevant_match_ups)
+        scores = []
+        ranked = []
+        for matchup in relevant_match_ups:
+            scores.append(matchup['odds'])
+
+        scores = sorted(scores, reverse=True)
+        for score in scores:
+            for matchup in relevant_match_ups:
+                if score == matchup['odds']:
+                    ranked.append(matchup)
+                    relevant_match_ups.pop(relevant_match_ups.index(matchup))
+
+        return Dota.print_match_up(this_hero, ranked)
 
     @staticmethod
     def match_hero_per_name(hero, all_heroes):
@@ -82,10 +92,13 @@ class Dota:
     @staticmethod
     def print_match_up(this_hero, matchup):
         long_string = f"Macth ups for {this_hero['localized_name']}:\n"
-        for hero in matchup:
-            long_string = long_string + f"{hero['hero']}: {hero['odds']:02.0f}%\n"
-
-        return long_string
+        if len(matchup) > 5:
+            for index in range(0, 5):
+                long_string = long_string+f"{matchup[index]['hero']}: {matchup[index]['odds']}%\n"
+            return long_string
+        else:
+            for hero in matchup:
+                long_string = long_string+f"{hero['hero']}: {hero['odds']}%\n"
 
     @staticmethod
     def hero_info(hero_id, all_heroes):

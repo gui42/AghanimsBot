@@ -23,7 +23,7 @@ dispatcher = updater.dispatcher
 def pos_dota(update, context):
     pos = ['hc', 'mid', 'offlaner', 'sup', 'hard sup']
     pos_f = pos[random.randint(0, 4)]
-    string = f'Jogue de {pos_f}'
+    string = f'Play as {pos_f}'
     context.bot.send_message(chat_id=update.effective_chat.id, text=string)
 
 
