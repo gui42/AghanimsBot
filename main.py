@@ -44,11 +44,6 @@ def start(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot that can get details of Dota 2 matches")
 
 
-def creditos(update, context):
-    string = 'Guilherme Hermes - guilherme.hermes@pm.me '
-    context.bot.send_message(chat_id=update.effective_chat.id, text=string)
-
-
 def last_match(update, context):
     text = ''.join(context.args)
     last_match = Dota.last_game(text)
@@ -74,13 +69,12 @@ def start_callback(update, context):
 
 
 # start and add handlers
-last_match_handler = CommandHandler('lastmatch', last_match)
 creditos_handler = CommandHandler('creditos', creditos)
 flip_coin_handler = CommandHandler('flip', flip_coin)
 pos_dota_handler = CommandHandler('dotapos', pos_dota)
 start_handler = CommandHandler('start', start)
 
-dispatcher.add_handler(last_match_handler)
+dispatcher.add_handler(CommandHandler('lastmatch', last_match))
 dispatcher.add_handler(CommandHandler('matchup', matchup))
 dispatcher.add_handler(CommandHandler("match", start_callback))
 dispatcher.add_handler(CommandHandler("roll", roll))
