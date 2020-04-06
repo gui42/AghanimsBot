@@ -49,8 +49,10 @@ class Dota:
             match_ups = Dota.request_match_up(this_hero['id'])
 
         relevant_match_ups = []
+        # gets heroes with at least 25 games and that this_hero has lost more than hald of the time
         for hero in match_ups:
             if hero['games_played'] > 25 and hero['wins'] < (hero['games_played']/2):
+                # just calculate the odds, makes it a percentage and turns that into a string, u know, the basic
                 hero['odds'] = f"{((1 - (hero['wins']/hero['games_played']))*100):02.0f}"
                 relevant_match_ups.append(hero)
 
@@ -66,18 +68,19 @@ class Dota:
         for matchup in relevant_match_ups:
             scores.append(matchup['odds'])
 
+        # get the odds of each hero, orders and reverses it
         scores = sorted(scores, reverse=True)
         for score in scores:
             for matchup in relevant_match_ups:
                 if score == matchup['odds']:
                     ranked.append(matchup)
                     relevant_match_ups.pop(relevant_match_ups.index(matchup))
-
+        
         return Dota.print_match_up(this_hero, ranked)
 
     @staticmethod
     def match_hero_per_name(hero, all_heroes):
-        # I'm using this regular expression to search for a hero name
+        # I'm using this regular expression to search for a hero name in the input
         padrao = "[a-z,A-Z]{2,15}\s{0,1}[a-z,A-Z]{0,15}"
         search = re.search(padrao, hero)
         if search:
