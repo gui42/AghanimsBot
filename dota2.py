@@ -172,6 +172,8 @@ class Dota:
 
     @staticmethod
     def last_game(steam32):
+        if len(steam32) != 8 or not steam32.isdecimal():
+            raise ValueError("Invalid Steam32 ID")
         last_games = Dota.request_player_recent_matches(steam32)
         last_match = last_games[0]
         last_match_id = last_match['match_id']

@@ -29,10 +29,7 @@ def pos_dota(update, context):
 
 def roll(update, context):
     rand = random.randint(1, 100)
-    if rand == 42:
-        context.bot.send_message(chat_id=update.effective_chat.id, text="2A")
-    else:
-        context.bot.send_message(chat_id=update.effective_chat.id, text=rand)
+    context.bot.send_message(chat_id=update.effective_chat.id, text=rand)
 
 
 def flip_coin(update, context):
@@ -45,9 +42,14 @@ def start(update, context):
 
 
 def last_match(update, context):
+    error = "Invalid steam 32 ID.\n" \
+            "https://steamid.xyz/"
     text = ''.join(context.args)
-    last_match = Dota.last_game(text)
-    update.message.reply_text(last_match)
+    try:
+        last_game = Dota.last_game(text)
+        update.message.reply_text(last_game)
+    except ValueError:
+        update.message.reply_text(error)
 
 
 def matchup(update, context):
@@ -55,32 +57,30 @@ def matchup(update, context):
     update.message.reply_text(Dota.match_up(text))
 
 
-def start_callback(update, context):
+def match(update, context):
     user_says = " ".join(context.args)
     user_says = user_says.strip()
     try:
         game = Dota(user_says)
-        update.message.reply_text(game.print_resume)
+        context.bot.send_message(chat_id=update.effective_chat.id, text=game.print_resume)
     except ValueError:
-        context.bot.send_message(chat_id=update.effective_chat.id, text="Invalid Dota2 match ID")
-    except NameError:
-        context.bot.send_message(chat_id=update.effective_chat.id, text="Sorry, for some reason I couldn't reach "
-                                                                        "OpenDota right now")
+        update.message.reply_text("Invalid Dota2 match ID")
 
 
 # start and add handlers
-creditos_handler = CommandHandler('creditos', creditos)
 flip_coin_handler = CommandHandler('flip', flip_coin)
 pos_dota_handler = CommandHandler('dotapos', pos_dota)
 start_handler = CommandHandler('start', start)
 
 dispatcher.add_handler(CommandHandler('lastmatch', last_match))
 dispatcher.add_handler(CommandHandler('matchup', matchup))
-dispatcher.add_handler(CommandHandler("match", start_callback))
+dispatcher.add_handler(CommandHandler("match", match))
 dispatcher.add_handler(CommandHandler("roll", roll))
-dispatcher.add_handler(creditos_handler)
 dispatcher.add_handler(flip_coin_handler)
 dispatcher.add_handler(pos_dota_handler)
 dispatcher.add_handler(start_handler)
 
 updater.start_polling()
+
+
+#aghanimsbot@pm.me
