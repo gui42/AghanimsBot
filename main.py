@@ -73,7 +73,10 @@ def match_up(update, context):
     try:
         update.message.reply_text(Dota.match_up(text))
     except NameError:
-        update.message.reply_text('hero not found'.title())
+        update.message.reply_text("hero could not be found".title())
+    except ValueError:
+        update.message.reply_text("No hero name given".title())
+
 
 def match(update, context):
     user_says = " ".join(context.args)

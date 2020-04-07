@@ -81,6 +81,7 @@ class Dota:
     @staticmethod
     def match_hero_per_name(hero, all_heroes):
         # I'm using this regular expression to search for a hero name in the input
+        this_hero = None
         padrao = "[a-z,A-Z]{2,15}\s{0,1}[a-z,A-Z]{0,15}"
         search = re.search(padrao, hero)
         if search:
@@ -88,10 +89,13 @@ class Dota:
             for heroes in all_heroes:
                 # so it's easier to get a match:
                 if heroes['localized_name'].lower().replace(' ', '') == search.lower().replace(' ', ''):
-                    return heroes
+                    this_hero = heroes
         else:
-            raise NameError("No search result in match_hero_per_name")
-
+            raise ValueError("No search result in match_hero_per_name")
+        if this_hero:
+            return this_hero
+        else:
+            raise NameError("No hero with this name found on match_hero_per_name")
     @staticmethod
     def print_match_up(this_hero, matchup):
         long_string = f"Macth ups for {this_hero['localized_name']}:\n"
@@ -297,15 +301,24 @@ class Dota:
         return line
 
 
-def request_data(id):
+def request_data(game_id):
     # requesting parse
+    game_id = str(game_id)
+    print('is decimal', game_id.isdecimal())
+    print('Len:', len(game_id) != 10)
+    if len(game_id) != 10 or not game_id.isdecimal():
+        raise ValueError("invalid id in request_match, len or not decimal")
+
     requests.post(f" https://api.opendota.com/api/request/{id} ", data={'match': id})
+    print('making request')
     # requesting for match details
     link = f"https://api.opendota.com/api/matches/{id}"
     r = requests.get(link)
+
     # checking if the request worked (200 ok)
     if r.status_code == 200:
         data = dict(json.loads(r.text))
         return data
     else:
+        print("error on status code")
         raise ValueError('Bad Request in request_data')
