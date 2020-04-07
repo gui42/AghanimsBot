@@ -169,16 +169,16 @@ class Dota:
             last_games = json.loads(last_games.text)
             return last_games
         else:
-            raise ValueError("Bad recente matches request")
+            raise ValueError("Bad recent matches request")
 
 
 
     @staticmethod
     def last_game(steam32):
-        if len(steam32) != 8 or not steam32.isdecimal():
+        if not steam32.isdecimal():
             raise ValueError("Invalid Steam32 ID")
         last_games = Dota.request_player_recent_matches(steam32)
-
+        print(last_games)
         if not last_games:
             raise NameError('Maybe profile set to private')
 
@@ -304,15 +304,14 @@ class Dota:
 def request_data(game_id):
     # requesting parse
     game_id = str(game_id)
-    print('is decimal', game_id.isdecimal())
-    print('Len:', len(game_id) != 10)
+
     if len(game_id) != 10 or not game_id.isdecimal():
         raise ValueError("invalid id in request_match, len or not decimal")
 
-    requests.post(f" https://api.opendota.com/api/request/{id} ", data={'match': id})
-    print('making request')
+    requests.post(f" https://api.opendota.com/api/request/{game_id} ", data={'match': id})
+
     # requesting for match details
-    link = f"https://api.opendota.com/api/matches/{id}"
+    link = f"https://api.opendota.com/api/matches/{game_id}"
     r = requests.get(link)
 
     # checking if the request worked (200 ok)
@@ -320,5 +319,5 @@ def request_data(game_id):
         data = dict(json.loads(r.text))
         return data
     else:
-        print("error on status code")
+        print("error on status code", r.status_code)
         raise ValueError('Bad Request in request_data')

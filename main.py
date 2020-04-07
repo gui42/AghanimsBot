@@ -21,14 +21,16 @@ dispatcher = updater.dispatcher
 
 
 def help(update, context):
-    long_string = f"{'posdota'.title()}: Will assign a random Dota 2 position to play\n" \
-                  f"{'roll'.title()}: Returns  a random number between 1 and 100\n" \
-                  f"{'flip'.title()}: returns Heads or Tails\n" \
-                  f"{'lastmastch'.title()} {'x'*8}: where x are the numbers on your STEAM32 ID " \
+    long_string = f"Commands:\n\n" \
+                  f"/posdota - Will assign a random Dota 2 position to play\n" \
+                  f"/roll - Returns  a random number between 1 and 100\n" \
+                  f"/flip - returns Heads or Tails\n" \
+                  f"\nPulling info from Dota matches:\n\n" \
+                  f"/lastmatch {'x'*8} -  where x are the numbers on your STEAM32 ID " \
                   f"to discover your steam32 ID: https://steamid.xyz/\n" \
-                  f"{'matchup'.title()} {'{hero name}'}: Returns a list with the heroes with the" \
+                  f"/matchup {'{hero name}'} - Returns a list with the heroes with the" \
                   f" highest win rate against {'{hero name}'}\n" \
-                  f"{'match'.title()} {'x'*10}: returns some basic status about a match\n" \
+                  f"/match {'x'*10}: returns some basic status about a match\n" \
                   f"Suggestions: aghanimsbot@pm.me"
     context.bot.send_message(chat_id=update.effective_chat.id, text=long_string)
 
