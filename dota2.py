@@ -71,10 +71,10 @@ class Dota:
         # get the odds of each hero, orders and reverses it
         scores = sorted(scores, reverse=True)
         for score in scores:
-            for matchup in relevant_match_ups:
-                if score == matchup['odds']:
-                    ranked.append(matchup)
-                    relevant_match_ups.pop(relevant_match_ups.index(matchup))
+            for match_up in relevant_match_ups:
+                if score == match_up['odds']:
+                    ranked.append(match_up)
+                    relevant_match_ups.pop(relevant_match_ups.index(match_up))
         
         return Dota.print_match_up(this_hero, ranked)
 
@@ -90,7 +90,7 @@ class Dota:
                 if heroes['localized_name'].lower().replace(' ', '') == search.lower().replace(' ', ''):
                     return heroes
         else:
-            raise NameError("No search result")
+            raise NameError("No search result in match_hero_per_name")
 
     @staticmethod
     def print_match_up(this_hero, matchup):
@@ -137,7 +137,6 @@ class Dota:
         info['last_hits'] = player['last_hits']
         info['level'] = player['level']
         info['team'] = 'radiant' if player['isRadiant'] else 'dire'
-        # info['lane_efc'] = player['lane_efficiency_pct']  if the match inst parced, this breaks eveything
         info['hero_damage'] = player['hero_damage']
         info['tower_damage'] = player['tower_damage']
         return info
@@ -175,6 +174,10 @@ class Dota:
         if len(steam32) != 8 or not steam32.isdecimal():
             raise ValueError("Invalid Steam32 ID")
         last_games = Dota.request_player_recent_matches(steam32)
+
+        if not last_games:
+            raise NameError('Maybe profile set to private')
+
         last_match = last_games[0]
         last_match_id = last_match['match_id']
         game = Dota(last_match_id)
@@ -198,12 +201,13 @@ class Dota:
 
         #formating these info to return as a 'game story':
         big_string = f"{this_player['hero'].title()}  played for the {this_player['team']}:\n" \
-                     f"{this_player['kills']}/{this_player['deaths']}/{this_player['assists']}" \
-                     f"\tGPM: {this_player['gold_per_min']} XPM: {this_player['xp_per_min']}" \
-                     f" Last hits: {this_player['last_hits']}\n" \
-                     f"Net Worth: {this_player['total_gold']} " \
-                     f"doing a total {this_player['hero_damage']} hero damage!\n" \
-                     f"The game had a duration of {game.duration} and {game.winner.title()} won!"
+                     f"{this_player['kills']:02d}/{this_player['deaths']:02d}/{this_player['assists']:02d}" \
+                     f" Net Worth: {this_player['total_gold']} \n" \
+                     f"GPM: {this_player['gold_per_min']} XPM: {this_player['xp_per_min']}" \
+                     f" Last Hits: {this_player['last_hits']}\n" \
+                     f"Hero Dmg: {this_player['hero_damage']}" \
+                     f" Tower Dmg: {this_player['tower_damage']} \n" \
+                     f"Duration: {game.duration} Winner: {game.winner.title()}"
         return big_string
 
     @property
