@@ -202,17 +202,7 @@ class Dota:
                 this_player['hero_damage'] = player['hero_damage']
                 this_player['team'] = player['team']
                 this_player['party_size'] = last_match['party_size']
-
-        #formating these info to return as a 'game story':
-        big_string = f"{this_player['hero'].title()}  played for the {this_player['team']}:\n" \
-                     f"{this_player['kills']:02d}/{this_player['deaths']:02d}/{this_player['assists']:02d}" \
-                     f" Net Worth: {this_player['total_gold']} \n" \
-                     f"GPM: {this_player['gold_per_min']} XPM: {this_player['xp_per_min']}" \
-                     f" Last Hits: {this_player['last_hits']}\n" \
-                     f"Hero Dmg: {this_player['hero_damage']}" \
-                     f" Tower Dmg: {this_player['tower_damage']} \n" \
-                     f"Duration: {game.duration} Winner: {game.winner.title()}"
-        return big_string
+        return this_player, game
 
     @property
     def players(self):
@@ -286,23 +276,6 @@ class Dota:
             if int(player['tower_damage'] > int(first['tower_damage'])):
                 first = player
         return f"{first['hero']} dealt {first['tower_damage']} damage to towers!"
-
-    def high_scores(self, all_h=False):
-        options = [self.highest_amount_of_kills, self.highest_nw, self.highest_damage, self.first_blood]
-        if all_h:
-            return options
-        else:
-            rand_num = random.randint(0, 3)
-            return options[rand_num]
-
-    @property
-    def print_resume(self):
-        line = f"{'radiant'.upper() if self.winner == 'radiant'else 'radiant'.title()} {self.radiant_score} " \
-                f": {self.dire_score} {'dire'.upper() if self.winner == 'dire' else 'dire'.title()}\n" \
-                f"Duration:\t{self.duration}\n" \
-                f"{self.high_scores(True)}\n"\
-                f"{self.OpenDota}"
-        return line
 
 
 def request_data(game_id):

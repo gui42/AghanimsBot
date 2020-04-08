@@ -3,7 +3,7 @@ import random
 import telegram.ext
 from telegram.ext import Updater, CommandHandler
 from dota2 import Dota
-from printer import print_resume_game
+from printer import print_resume_game, print_recent_game
 
 
 def open_token():
@@ -27,13 +27,12 @@ def help_(update, context):
                   f"\n/posdota - Will assign a random Dota 2 position\n" \
                   f"/roll - Returns  a random number between 1 and 100\n" \
                   f"/flip - returns <i>Heads</i> or <i>Tails</i>\n" \
-                  f"<a href='https://steamid.xyz/'>Discover your Steam32</a>\n" \
                   f"\n<b>Pulling info from Dota matches:</b>\n" \
                   f"\n/lastmatch <i>steam32</i> - Get's information on the last game of the player\n" \
                   f"/matchup <i>hero</i> - Returns heroes with a high win rate against the <i>hero</>\n" \
                   f"/match <i>match ID</i> - returns some basic status about a match\n" \
-                  f"\n<a href='https://steamid.xyz/'>Discover your Steam32</a>\n" \
-                  f"Suggestions: aghanimsbot@pm.me"
+                  f"\n<a href='https://steamid.xyz/'>Discover your Steam32 ID</a>\n" \
+                  f"\nSuggestions: aghanimsbot@pm.me"
     context.bot.send_message(chat_id=update.effective_chat.id, text=long_string, disable_web_page_preview=True,
                              parse_mode=telegram.ParseMode.HTML)
 
@@ -61,14 +60,18 @@ def start(update, context):
 
 def last_match(update, context):
     error = "Invalid steam 32 ID.\n" \
-            "https://steamid.xyz/"
+            "<a href='https://steamid.xyz/'>Check your ID</a>"
+
     error2 = "check if the profile is public"
+
     text = ''.join(context.args)
+
     try:
-        last_game = Dota.last_game(text)
-        update.message.reply_text(last_game)
+        context.bot.send_message(chat_id=update.effective_chat.id, text=print_recent_game(text),
+                                 disable_web_page_preview=True, parse_mode=telegram.ParseMode.HTML)
     except ValueError:
-        context.bot.send_message(chat_id=update.effective_chat_id, text=error, disable_web_page_preview=True)
+        context.bot.send_message(chat_id=update.effective_chat.id, text=error, disable_web_page_preview=True,
+                                 parse_mode=telegram.ParseMode.HTML)
     except NameError:
         update.message.reply_text(error2)
 
