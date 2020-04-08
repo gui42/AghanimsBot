@@ -1,7 +1,9 @@
 import logging
 import random
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+import telegram.ext
+from telegram.ext import Updater, CommandHandler
 from dota2 import Dota
+from printer import print_resume_game
 
 
 def open_token():
@@ -20,19 +22,20 @@ updater = Updater(token=token, use_context=True)
 dispatcher = updater.dispatcher
 
 
-def help(update, context):
-    long_string = f"Commands:\n\n" \
-                  f"/posdota - Will assign a random Dota 2 position to play\n" \
+def help_(update, context):
+    long_string = f"<b>Commands:</b>\n" \
+                  f"\n/posdota - Will assign a random Dota 2 position\n" \
                   f"/roll - Returns  a random number between 1 and 100\n" \
-                  f"/flip - returns Heads or Tails\n" \
-                  f"\nPulling info from Dota matches:\n\n" \
-                  f"/lastmatch {'x'*8} -  where x are the numbers on your STEAM32 ID " \
-                  f"to discover your steam32 ID: https://steamid.xyz/\n" \
-                  f"/matchup {'{hero name}'} - Returns a list with the heroes with the" \
-                  f" highest win rate against {'{hero name}'}\n" \
-                  f"/match {'x'*10}: returns some basic status about a match\n" \
+                  f"/flip - returns <i>Heads</i> or <i>Tails</i>\n" \
+                  f"<a href='https://steamid.xyz/'>Discover your Steam32</a>\n" \
+                  f"\n<b>Pulling info from Dota matches:</b>\n" \
+                  f"\n/lastmatch <i>steam32</i> - Get's information on the last game of the player\n" \
+                  f"/matchup <i>hero</i> - Returns heroes with a high win rate against the <i>hero</>\n" \
+                  f"/match <i>match ID</i> - returns some basic status about a match\n" \
+                  f"\n<a href='https://steamid.xyz/'>Discover your Steam32</a>\n" \
                   f"Suggestions: aghanimsbot@pm.me"
-    context.bot.send_message(chat_id=update.effective_chat.id, text=long_string)
+    context.bot.send_message(chat_id=update.effective_chat.id, text=long_string, disable_web_page_preview=True,
+                             parse_mode=telegram.ParseMode.HTML)
 
 
 def pos_dota(update, context):
@@ -65,7 +68,7 @@ def last_match(update, context):
         last_game = Dota.last_game(text)
         update.message.reply_text(last_game)
     except ValueError:
-        update.message.reply_text(error)
+        context.bot.send_message(chat_id=update.effective_chat_id, text=error, disable_web_page_preview=True)
     except NameError:
         update.message.reply_text(error2)
 
@@ -85,7 +88,8 @@ def match(update, context):
     user_says = user_says.strip()
     try:
         game = Dota(user_says)
-        context.bot.send_message(chat_id=update.effective_chat.id, text=game.print_resume)
+        context.bot.send_message(chat_id=update.effective_chat.id, text=print_resume_game(game),
+                                 disable_web_page_preview=True, parse_mode=telegram.ParseMode.HTML)
     except ValueError:
         update.message.reply_text("Invalid Dota2 match ID")
 
@@ -95,7 +99,7 @@ flip_coin_handler = CommandHandler('flip', flip_coin)
 pos_dota_handler = CommandHandler('dotapos', pos_dota)
 start_handler = CommandHandler('start', start)
 
-dispatcher.add_handler(CommandHandler('help', help))
+dispatcher.add_handler(CommandHandler('help', help_))
 dispatcher.add_handler(CommandHandler('lastmatch', last_match))
 dispatcher.add_handler(CommandHandler('matchup', match_up))
 dispatcher.add_handler(CommandHandler("match", match))

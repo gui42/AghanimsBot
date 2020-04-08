@@ -143,6 +143,7 @@ class Dota:
         info['team'] = 'radiant' if player['isRadiant'] else 'dire'
         info['hero_damage'] = player['hero_damage']
         info['tower_damage'] = player['tower_damage']
+        info['firstblood_claimed'] = player['firstblood_claimed']
         return info
 
     def gather_info(self):
@@ -178,7 +179,6 @@ class Dota:
         if not steam32.isdecimal():
             raise ValueError("Invalid Steam32 ID")
         last_games = Dota.request_player_recent_matches(steam32)
-        print(last_games)
         if not last_games:
             raise NameError('Maybe profile set to private')
 
@@ -230,10 +230,7 @@ class Dota:
             m += 1
             s -= 60
 
-        if h > 0:
-            return f'{h:02d}:{m:02d}:{s:02d}'
-        else:
-            return f'{m:02d}:{s:02d}'
+        return [h, m, s]
 
     @property
     def winner(self):
@@ -244,12 +241,19 @@ class Dota:
 
     @property
     def first_blood(self):
+        first_blood_info = []
         sec = int(self.__data['first_blood_time'])
         min = 0
         while sec > 60:
             sec -= 60
             min += 1
-        return f'First blood time: {min:02d}:{sec:02d}'
+        time = f'{min:02d}:{sec:02d}'
+        first_blood_info.append(time)
+        for player in self.info_players:
+            if player['firstblood_claimed']:
+                first_blood_info.append(player)
+        
+        return first_blood_info
 
     @property
     def highest_nw(self):
@@ -257,7 +261,7 @@ class Dota:
         for player in self.info_players:
             if int(player['total_gold']) > int(first['total_gold']):
                 first = player
-        return f"{first['hero']} had a NW of {first['total_gold']}"
+        return first
 
     @property
     def highest_amount_of_kills(self):
@@ -273,7 +277,7 @@ class Dota:
         for player in self.info_players:
             if int(player['hero_damage'] > int(first['hero_damage'])):
                 first = player
-        return f"{first['hero']} dealt {first['hero_damage']} total hero damage!"
+        return first
 
     @property
     def highest_tower_damage(self):
