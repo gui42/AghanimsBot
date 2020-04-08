@@ -76,7 +76,7 @@ class Dota:
                     ranked.append(match_up)
                     relevant_match_ups.pop(relevant_match_ups.index(match_up))
         
-        return Dota.print_match_up(this_hero, ranked)
+        return this_hero, ranked
 
     @staticmethod
     def match_hero_per_name(hero, all_heroes):
@@ -96,6 +96,7 @@ class Dota:
             return this_hero
         else:
             raise NameError("No hero with this name found on match_hero_per_name")
+
     @staticmethod
     def print_match_up(this_hero, matchup):
         long_string = f"Macth ups for {this_hero['localized_name']}:\n"

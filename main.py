@@ -3,7 +3,7 @@ import random
 import telegram.ext
 from telegram.ext import Updater, CommandHandler
 from dota2 import Dota
-from printer import print_resume_game, print_recent_game
+from printer import print_resume_game, print_recent_game, print_match_ups
 
 
 def open_token():
@@ -79,7 +79,8 @@ def last_match(update, context):
 def match_up(update, context):
     text = "".join(context.args)
     try:
-        update.message.reply_text(Dota.match_up(text))
+        context.bot.send_message(chat_id=update.effective_chat.id, text=print_match_ups(text),
+                                 disable_web_page_preview=True, parse_mode=telegram.ParseMode.HTML)
     except NameError:
         update.message.reply_text("hero could not be found".title())
     except ValueError:

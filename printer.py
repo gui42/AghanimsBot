@@ -40,3 +40,11 @@ def print_recent_game(steam32):
                  f"<a href='{game.OpenDota}'>OpenDota</a>"
     return big_string
 
+
+def print_match_ups(hero_id):
+    this_hero, match_ups = Dota.match_up(hero_id)
+    big_string = f"<u>Counters for <b>{this_hero['localized_name']}</b></u>:\n"
+    for x in range(0, 5):
+        big_string = big_string+f"<b>{match_ups[x]['hero']}</b>: " \
+                                f"{'<i>'+match_ups[x]['odds']+'</i>'}%\n"
+    return big_string
