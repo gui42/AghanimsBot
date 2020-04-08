@@ -140,6 +140,7 @@ class Dota:
         info['assists'] = player['assists']
         info['kills'] = player['kills']
         info['last_hits'] = player['last_hits']
+        info['denies'] = player['denies']
         info['level'] = player['level']
         info['team'] = 'radiant' if player['isRadiant'] else 'dire'
         info['hero_damage'] = player['hero_damage']
@@ -199,6 +200,7 @@ class Dota:
                 this_player['total_gold'] = player['total_gold']
                 this_player['level'] = player['level']
                 this_player['last_hits'] = player['last_hits']
+                this_player['denies'] = player['denies']
                 this_player['tower_damage'] = player['tower_damage']
                 this_player['hero_damage'] = player['hero_damage']
                 this_player['team'] = player['team']
