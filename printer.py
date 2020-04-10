@@ -1,4 +1,5 @@
 from dota2 import Dota
+import ranktier
 
 
 def print_resume_game(game: Dota):
@@ -48,3 +49,27 @@ def print_match_ups(hero_id):
         big_string = big_string+f"<b>{match_ups[x]['hero']}</b>: " \
                                 f"{'<i>'+match_ups[x]['odds']+'</i>'}%\n"
     return big_string
+
+
+def print_player_resume(steam_id):
+    win_lose = Dota.request_win_loss(steam_id)
+    player = Dota.request_player(steam_id)
+    best_heroes = Dota.best_heroes(steam_id)
+    if win_lose and player and best_heroes:
+        rank = player['rank_tier']
+        rank = ranktier.Rank(rank)
+        win_lose['odds'] = win_lose['win']/(win_lose['win']+win_lose['lose'])
+        big_string = f"<b>Player</b>:{player['profile']['personaname']} {'<b>D+</b>'if player['profile']['plus'] else ''}:\n" \
+                     f"<b>Wins</b>: {win_lose['win']}\n" \
+                     f"<b>Win%</b>: {(win_lose['odds']*100):02.02f}%\n" \
+                     f"<b>Total games</b>: {win_lose['win']+win_lose['lose']}\n" \
+                     f"<b>Rank</b>: <i>{rank}</i>\n" \
+                     f"<u>Best Heroes</u>:\n"
+        for x in range(0, 5):
+            big_string = big_string+f"<b>{best_heroes[x]['localized_name']}</b> - <b>WR</b>: " \
+                                    f"{((best_heroes[x]['win']/best_heroes[x]['games'])*100):02.02f}% " \
+                                    f"<b>T. Games</b>: {best_heroes[x]['games']}\n"
+        big_string = big_string+f"<a href='https://www.opendota.com/players/{steam_id}'>OpenDota profile</a>"
+        return big_string
+    else:
+        raise ValueError("win_loss = null or player = null or best_heroes = null")

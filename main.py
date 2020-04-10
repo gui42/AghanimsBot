@@ -3,7 +3,7 @@ import random
 import telegram.ext
 from telegram.ext import Updater, CommandHandler
 from dota2 import Dota
-from printer import print_resume_game, print_recent_game, print_match_ups
+from printer import print_resume_game, print_recent_game, print_match_ups, print_player_resume
 
 
 def open_token():
@@ -58,11 +58,22 @@ def start(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot that can get details of Dota 2 matches")
 
 
+def player_resume(update, context):
+    error1 = 'Something went wrong'
+    steam_id = ''.join(context.args)
+    try:
+        context.bot.send_message(chat_id=update.effective_chat.id, text=print_player_resume(steam_id),
+                                 disable_web_page_preview=True, parse_mode=telegram.ParseMode.HTML)
+    except ValueError:
+        context.bot.send_message(chat_id=update.effective_chat.id, text=error1,
+                                 disable_web_page_preview=True, parse_mode=telegram.ParseMode.HTML)
+
+
 def last_match(update, context):
     error = "Invalid steam 32 ID.\n" \
             "<a href='https://steamid.xyz/'>Check your ID</a>"
 
-    error2 = "check if the profile is public"
+    error2 = "something went wrong".title()
 
     text = ''.join(context.args)
 
@@ -103,6 +114,7 @@ flip_coin_handler = CommandHandler('flip', flip_coin)
 pos_dota_handler = CommandHandler('dotapos', pos_dota)
 start_handler = CommandHandler('start', start)
 
+dispatcher.add_handler(CommandHandler('player', player_resume))
 dispatcher.add_handler(CommandHandler('help', help_))
 dispatcher.add_handler(CommandHandler('lastmatch', last_match))
 dispatcher.add_handler(CommandHandler('matchup', match_up))

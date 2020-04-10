@@ -98,15 +98,17 @@ class Dota:
             raise NameError("No hero with this name found on match_hero_per_name")
 
     @staticmethod
-    def print_match_up(this_hero, matchup):
-        long_string = f"Macth ups for {this_hero['localized_name']}:\n"
-        if len(matchup) > 5:
-            for index in range(0, 5):
-                long_string = long_string+f"{matchup[index]['hero']}: {matchup[index]['odds']}%\n"
-            return long_string
-        else:
-            for hero in matchup:
-                long_string = long_string+f"{hero['hero']}: {hero['odds']}%\n"
+    def best_heroes(steam_id):
+        all_heroes = Dota.request_all_heroes()
+        all_best_heroes = Dota.request_player_heroes(steam_id)
+        for best in all_best_heroes:
+            for hero in all_heroes:
+                if hero['id'] == int(best['hero_id']):
+                    best['localized_name'] = hero['localized_name']
+                    best['primary_attr'] = hero['primary_attr']
+                    best['roles'] = hero['roles']
+                    best['attack_type'] = hero['attack_type']
+        return all_best_heroes
 
     @staticmethod
     def hero_info(hero_id, all_heroes):
@@ -165,6 +167,15 @@ class Dota:
         return radiant, dire
 
     @staticmethod
+    def request_player_heroes(account_id):
+        player_heroes = requests.get(f"https://api.opendota.com/api/players/{account_id}/heroes")
+        if player_heroes.status_code == 200:
+            player_heroes = json.loads(player_heroes.text)
+            return player_heroes
+        else:
+            raise ValueError("Bad request in request_player_heroes")
+
+    @staticmethod
     def request_player_recent_matches(steam32):
         link = f"https://api.opendota.com/api/players/{steam32}/recentMatches"
         last_games = requests.get(link)
@@ -173,8 +184,6 @@ class Dota:
             return last_games
         else:
             raise ValueError("Bad recent matches request")
-
-
 
     @staticmethod
     def last_game(steam32):
@@ -248,6 +257,24 @@ class Dota:
         
         return first_blood_info
 
+    @staticmethod
+    def request_player(account_id):
+        player = requests.get(f"https://api.opendota.com/api/players/{account_id}")
+        if player.status_code == 200:
+            player = json.loads(player.text)
+            return player
+        else:
+            raise ValueError("Bad request in request_player")
+
+    @staticmethod
+    def request_win_loss(account_id):
+        wl = requests.get(f"https://api.opendota.com/api/players/{account_id}/wl")
+        if wl.status_code == 200:
+            wl = json.loads(wl.text)
+            return wl
+        else:
+            raise ValueError("Bad request at request_win_loss")
+
     @property
     def highest_nw(self):
         first = {"total_gold": '0'}
@@ -262,7 +289,7 @@ class Dota:
         for player in self.info_players:
             if int(player['kills']) > int(first['kills']):
                 first = player
-        return f"{first['hero']} got {first['kills']} kills!"
+        return first
 
     @property
     def highest_damage(self):
@@ -278,7 +305,7 @@ class Dota:
         for player in self.info_players:
             if int(player['tower_damage'] > int(first['tower_damage'])):
                 first = player
-        return f"{first['hero']} dealt {first['tower_damage']} damage to towers!"
+        return first
 
 
 def request_data(game_id):
