@@ -40,10 +40,12 @@ The bot will send the last game of the player, with focus on the player's hero.
 <h3>Help</h3>
 The bot will send a list of commands and basic help on how to use them.
 
-<h2>What was used so far<h2>
+<h2>What was used so far</h2>
 
 <a href='https://python-telegram-bot.org/'>Python Telegram Bot</a>
 
-<a href='https://www.opendota.com/'>OpenDota</a> and its amazing API
+<a href='https://www.opendota.com/'>OpenDota API</a>
 
 <a href='https://github.com/marcusmunch/ranktier'>Ranktier</a>
+
+<a href='https://core.telegram.org/bots/api'>Telegram Bot API</a>
