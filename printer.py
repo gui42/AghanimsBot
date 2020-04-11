@@ -65,7 +65,7 @@ def print_player_resume(steam_id, all_heroes=None):
                      f"<b>Win%</b>: {(win_lose['odds']*100):02.02f}%\n" \
                      f"<b>Total games</b>: {win_lose['win']+win_lose['lose']}\n" \
                      f"<b>Rank</b>: <i>{rank}</i>\n" \
-                     f"<u>Best Heroes</u>:\n"
+                     f"<u>Most Played Heroes</u>:\n"
         for x in range(0, 5):
             big_string = big_string+f"<b>{best_heroes[x]['localized_name']}</b> - <b>WR</b>: " \
                                     f"{((best_heroes[x]['win']/best_heroes[x]['games'])*100):02.02f}% " \
