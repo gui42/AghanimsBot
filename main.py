@@ -1,6 +1,4 @@
-import logging
-import random
-import telegram.ext
+import logging, random, telegram.ext
 from telegram.ext import Updater, CommandHandler
 from dota2 import Dota
 from printer import print_resume_game, print_recent_game, print_match_ups, print_player_resume
@@ -16,6 +14,13 @@ def open_token():
         raise FileNotFoundError("Couldn't find the file")
 
 
+try:
+    all_heroes = Dota.request_all_heroes()
+    print('got all heroes')
+except ValueError:
+    all_heroes = None
+    print("bad request at main request all heroes")
+
 token = open_token()
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 updater = Updater(token=token, use_context=True)
@@ -29,6 +34,8 @@ def help_(update, context):
                   f"/flip - returns <i>Heads</i> or <i>Tails</i>\n" \
                   f"\n<b>Pulling info from Dota matches:</b>\n" \
                   f"\n/lastmatch <i>steam32</i> - Get's information on the last game of the player\n" \
+                  f"/player <i>steam32</i> - Returns a resume of the player's profile, including rank, most played " \
+                  f"heroes and win rate\n" \
                   f"/matchup <i>hero</i> - Returns heroes with a high win rate against the <i>hero</>\n" \
                   f"/match <i>match ID</i> - returns some basic status about a match\n" \
                   f"\n<a href='https://steamid.xyz/'>Discover your Steam32 ID</a>\n" \
@@ -38,7 +45,7 @@ def help_(update, context):
 
 
 def pos_dota(update, context):
-    pos = ['hc', 'mid', 'offlaner', 'sup', 'hard sup']
+    pos = ['Safe lane', 'Mid lane', 'Offlane', 'Soft Support', 'Hard Support']
     pos_f = pos[random.randint(0, 4)]
     string = f'Play as {pos_f}'
     context.bot.send_message(chat_id=update.effective_chat.id, text=string)
@@ -55,14 +62,20 @@ def flip_coin(update, context):
 
 
 def start(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot that can get details of Dota 2 matches")
+    long_string = f"Hi, I'm a bot that can help you show off your Dota2 matches to your telegram groups!\n"\
+                  f"To learn more about me, you can use <b>/help</b>, visit my "\
+                  f"<a href='https://github.com/gui42/AghanimsBot'>GitHub</a> " \
+                  f"page or send me a email at aghanimsbot@pm.me"
+
+    context.bot.send_message(chat_id=update.effective_chat.id, text=long_string,
+                             disable_web_page_preview=True, parse_mode=telegram.ParseMode.HTML)
 
 
 def player_resume(update, context):
     error1 = 'Something went wrong'
     steam_id = ''.join(context.args)
     try:
-        context.bot.send_message(chat_id=update.effective_chat.id, text=print_player_resume(steam_id),
+        context.bot.send_message(chat_id=update.effective_chat.id, text=print_player_resume(steam_id, all_heroes),
                                  disable_web_page_preview=True, parse_mode=telegram.ParseMode.HTML)
     except ValueError:
         context.bot.send_message(chat_id=update.effective_chat.id, text=error1,
@@ -78,7 +91,7 @@ def last_match(update, context):
     text = ''.join(context.args)
 
     try:
-        context.bot.send_message(chat_id=update.effective_chat.id, text=print_recent_game(text),
+        context.bot.send_message(chat_id=update.effective_chat.id, text=print_recent_game(text, all_heroes),
                                  disable_web_page_preview=True, parse_mode=telegram.ParseMode.HTML)
     except ValueError:
         context.bot.send_message(chat_id=update.effective_chat.id, text=error, disable_web_page_preview=True,
@@ -90,7 +103,7 @@ def last_match(update, context):
 def match_up(update, context):
     text = "".join(context.args)
     try:
-        context.bot.send_message(chat_id=update.effective_chat.id, text=print_match_ups(text),
+        context.bot.send_message(chat_id=update.effective_chat.id, text=print_match_ups(text, all_heroes),
                                  disable_web_page_preview=True, parse_mode=telegram.ParseMode.HTML)
     except NameError:
         update.message.reply_text("hero could not be found".title())
@@ -102,7 +115,7 @@ def match(update, context):
     user_says = " ".join(context.args)
     user_says = user_says.strip()
     try:
-        game = Dota(user_says)
+        game = Dota(user_says, all_heroes)
         context.bot.send_message(chat_id=update.effective_chat.id, text=print_resume_game(game),
                                  disable_web_page_preview=True, parse_mode=telegram.ParseMode.HTML)
     except ValueError:
@@ -112,7 +125,6 @@ def match(update, context):
 # start and add handlers
 flip_coin_handler = CommandHandler('flip', flip_coin)
 pos_dota_handler = CommandHandler('dotapos', pos_dota)
-start_handler = CommandHandler('start', start)
 
 dispatcher.add_handler(CommandHandler('player', player_resume))
 dispatcher.add_handler(CommandHandler('help', help_))
@@ -122,7 +134,7 @@ dispatcher.add_handler(CommandHandler("match", match))
 dispatcher.add_handler(CommandHandler("roll", roll))
 dispatcher.add_handler(flip_coin_handler)
 dispatcher.add_handler(pos_dota_handler)
-dispatcher.add_handler(start_handler)
+dispatcher.add_handler(CommandHandler("start", start))
 
 updater.start_polling()
 

@@ -9,8 +9,9 @@ def print_resume_game(game: Dota):
     duration = game.duration
     radiant_score = game.radiant_score
     dire_score = game.dire_score
-    big_string = f"<b>{'<u>Radiant</u>' if game.winner=='radiant' else 'Radiant'}</b> {radiant_score} : " \
-                 f"{dire_score} <b>{'<u>Dire</u>' if game.winner =='dire' else 'Dire'}</b>\n" \
+    winner = game.winner
+    big_string = f"<b>{'<u>Radiant</u>' if winner=='radiant' else 'Radiant'}</b> {radiant_score} : " \
+                 f"{dire_score} <b>{'<u>Dire</u>' if winner =='dire' else 'Dire'}</b>\n" \
                  f"<b>{h_damage['hero']}</b> did a total of {h_damage['hero_damage']} <b>hero damage</b>\n" \
                  f"<b>First blood</b> was struck at {first_blood[0]} by <b>{first_blood[1]['hero']}</b>\n" \
                  f"The hero with the highest <b>net work</b> was <b>{h_nw['hero']}</b>" \
@@ -21,8 +22,8 @@ def print_resume_game(game: Dota):
     return big_string
 
 
-def print_recent_game(steam32):
-    this_player, game = Dota.last_game(steam32)
+def print_recent_game(steam32, all_heroes=None):
+    this_player, game = Dota.last_game(steam32, all_heroes)
     radiant_score = game.radiant_score
     dire_score = game.dire_score
     duration = game.duration
@@ -42,8 +43,8 @@ def print_recent_game(steam32):
     return big_string
 
 
-def print_match_ups(hero_id):
-    this_hero, match_ups = Dota.match_up(hero_id)
+def print_match_ups(hero_id, all_heroes=None):
+    this_hero, match_ups = Dota.match_up(hero_id, all_heroes)
     big_string = f"<u>Counters for <b>{this_hero['localized_name']}</b></u>:\n"
     for x in range(0, 5):
         big_string = big_string+f"<b>{match_ups[x]['hero']}</b>: " \
@@ -51,10 +52,10 @@ def print_match_ups(hero_id):
     return big_string
 
 
-def print_player_resume(steam_id):
+def print_player_resume(steam_id, all_heroes=None):
     win_lose = Dota.request_win_loss(steam_id)
     player = Dota.request_player(steam_id)
-    best_heroes = Dota.best_heroes(steam_id)
+    best_heroes = Dota.best_heroes(steam_id, all_heroes)
     if win_lose and player and best_heroes:
         rank = player['rank_tier']
         rank = ranktier.Rank(rank)

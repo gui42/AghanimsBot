@@ -1,20 +1,27 @@
 import requests
 import json
-import random
-import re
 
 
 class Dota:
 
-    def __init__(self, id):
-        self.__data = request_data(id)
-        self.id = id
-        self.heroes_raw = self.request_all_heroes()
+    def __init__(self, match_id, all_heroes=None):
+        self.__data = request_data(match_id)
+        self.match_id = match_id
+
+        # I've add the parameter all_heroes in all functions that uses it,
+        # as it's a request that won't change much, I don't think I need to ask for it again every time
+        # that is needed, so its a simple change that will result in a faster response time for the bot and
+        # less requests to OpenDota, so a win/win situation
+
+        if not all_heroes:
+            self.heroes_raw = self.request_all_heroes()
+        else:
+            self.heroes_raw = all_heroes
         self.info_players = self.gather_info()
-        self.radiant, self.dire = self.teams()
+        self.radiant_players, self.dire_players = self.teams()
         self.radiant_score = self.__data['radiant_score']
         self.dire_score = self.__data['dire_score']
-        self.OpenDota = f"https://www.opendota.com/matches/{id}"
+        self.OpenDota = f"https://www.opendota.com/matches/{match_id}"
 
     @staticmethod
     def request_all_heroes():
@@ -29,8 +36,8 @@ class Dota:
             raise ValueError("Bad request in all_heroes")
 
     @staticmethod
-    def request_match_up(id):
-        link = f"https://api.opendota.com/api/heroes/{id}/matchups"
+    def request_match_up(hero_id):
+        link = f"https://api.opendota.com/api/heroes/{hero_id}/matchups"
         all_match_up = requests.get(link)
         if all_match_up.status_code == 200:
             all_match_up = json.loads(all_match_up.text)
@@ -39,8 +46,9 @@ class Dota:
             raise ValueError("Bad request in match_ups")
 
     @staticmethod
-    def match_up(hero_id):
-        all_heroes = Dota.request_all_heroes()
+    def match_up(hero_id, all_heroes=None):
+        if not all_heroes:
+            all_heroes = Dota.request_all_heroes()
         if str(hero_id).isdecimal():
             match_ups = Dota.request_match_up(hero_id)
             this_hero = Dota.hero_info(hero_id, all_heroes)
@@ -82,24 +90,17 @@ class Dota:
     def match_hero_per_name(hero, all_heroes):
         # I'm using this regular expression to search for a hero name in the input
         this_hero = None
-        padrao = "[a-z,A-Z]{2,15}\s{0,1}[a-z,A-Z]{0,15}"
-        search = re.search(padrao, hero)
-        if search:
-            search = search.string
-            for heroes in all_heroes:
-                # so it's easier to get a match:
-                if heroes['localized_name'].lower().replace(' ', '') == search.lower().replace(' ', ''):
-                    this_hero = heroes
-        else:
-            raise ValueError("No search result in match_hero_per_name")
-        if this_hero:
-            return this_hero
-        else:
-            raise NameError("No hero with this name found on match_hero_per_name")
+        for heroes in all_heroes:
+            # so it's easier to get a match:
+            if heroes['localized_name'].lower().replace(' ', '') == hero.lower().replace(' ', ''):
+                this_hero = heroes
+                return this_hero
+        return None
 
     @staticmethod
-    def best_heroes(steam_id):
-        all_heroes = Dota.request_all_heroes()
+    def best_heroes(steam_id, all_heroes=None):
+        if not all_heroes:
+            all_heroes = Dota.request_all_heroes()
         all_best_heroes = Dota.request_player_heroes(steam_id)
         for best in all_best_heroes:
             for hero in all_heroes:
@@ -186,7 +187,7 @@ class Dota:
             raise ValueError("Bad recent matches request")
 
     @staticmethod
-    def last_game(steam32):
+    def last_game(steam32, all_heroes=None):
         if not steam32.isdecimal():
             raise ValueError("Invalid Steam32 ID")
         last_games = Dota.request_player_recent_matches(steam32)
@@ -195,7 +196,7 @@ class Dota:
 
         last_match = last_games[0]
         last_match_id = last_match['match_id']
-        game = Dota(last_match_id)
+        game = Dota(last_match_id, all_heroes)
         this_player = {}
         for player in game.info_players:
             if player['id'] == last_match['hero_id']:
