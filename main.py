@@ -39,6 +39,8 @@ def help_(update, context):
                   f"/matchup <i>hero</i> - Returns heroes with a high win rate against the <i>hero</>\n" \
                   f"/match <i>match ID</i> - returns some basic status about a match\n" \
                   f"\n<a href='https://steamid.xyz/'>Discover your Steam32 ID</a>\n" \
+                  f"\nIf you want to know more about me, you can go to my" \
+                  f" <a href='https://github.com/gui42/AghanimsBot'>GitHub</a> page\n" \
                   f"\nSuggestions: aghanimsbot@pm.me"
     context.bot.send_message(chat_id=update.effective_chat.id, text=long_string, disable_web_page_preview=True,
                              parse_mode=telegram.ParseMode.HTML)
