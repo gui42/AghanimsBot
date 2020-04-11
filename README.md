@@ -44,6 +44,8 @@ The bot will send a list of commands and basic help on how to use them.
 
 <a href='https://python-telegram-bot.org/'>Python Telegram Bot</a>
 
-<a href='https://www.opendota.com/'>OpenDota</a> and its amazing API
+<a href='https://www.opendota.com/'>OpenDota API</a>
 
 <a href='https://github.com/marcusmunch/ranktier'>Ranktier</a>
+
+<a href='https://core.telegram.org/bots/api'>Telegram Bot API</a>
