@@ -14,7 +14,7 @@ def print_resume_game(game: Dota):
                  f"{dire_score} <b>{'<u>Dire</u>' if winner =='dire' else 'Dire'}</b>\n" \
                  f"<b>{h_damage['hero']}</b> did a total of {h_damage['hero_damage']} <b>hero damage</b>\n" \
                  f"<b>First blood</b> was struck at {first_blood[0]} by <b>{first_blood[1]['hero']}</b>\n" \
-                 f"The hero with the highest <b>net work</b> was <b>{h_nw['hero']}</b>" \
+                 f"The hero with the highest <b>net worth</b> was <b>{h_nw['hero']}</b>" \
                  f" with {h_nw['total_gold']} total gold\n" \
                  f"The game lasted {duration[0]+' hours ' if duration[0] > 0 else ''}" \
                  f"{duration[1]} minutes and {duration[2]} seconds\n" \

@@ -1,6 +1,11 @@
 import requests
 import json
 
+# I've add the parameter all_heroes in all functions that needs it
+# as it's a request that won't change much, I don't think I need to ask for it again every time
+# that is needed, so its a simple change that will result in a faster response time for the bot and
+# less requests to OpenDota, so a win/win situation
+
 
 class Dota:
 
@@ -8,15 +13,11 @@ class Dota:
         self.__data = request_data(match_id)
         self.match_id = match_id
 
-        # I've add the parameter all_heroes in all functions that uses it,
-        # as it's a request that won't change much, I don't think I need to ask for it again every time
-        # that is needed, so its a simple change that will result in a faster response time for the bot and
-        # less requests to OpenDota, so a win/win situation
-
         if not all_heroes:
             self.heroes_raw = self.request_all_heroes()
         else:
             self.heroes_raw = all_heroes
+
         self.info_players = self.gather_info()
         self.radiant_players, self.dire_players = self.teams()
         self.radiant_score = self.__data['radiant_score']
@@ -188,6 +189,7 @@ class Dota:
 
     @staticmethod
     def last_game(steam32, all_heroes=None):
+
         if not steam32.isdecimal():
             raise ValueError("Invalid Steam32 ID")
         last_games = Dota.request_player_recent_matches(steam32)
