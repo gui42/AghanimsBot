@@ -9,7 +9,7 @@
  </p>
  <h2>How can I use the bot?</h2>
  
- <p>You just add @AghanimsBot to a group or start a chat with it</p>
+ <p>You just add <a href='https://telegram.me/AghanimsBot'>@AghanimsBot</a> to a group or start a chat with it</p>
  
  <h2>Commands</h2>
  
