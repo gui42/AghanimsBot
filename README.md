@@ -28,10 +28,6 @@
 Followed by the stem32 id of a player, gives a summary of the player profile, with rank, user name, win rate, total games and
 the 5 most played heroes.
 
-<h3>Matchup</h3>
-Followed by a hero name, will return a list of 5 possible counters of that hero.
-For defining those counters, I've use heroes with high win rate agains the one searched, it needs to be improved.
-
 <h3>Lastmatch</h3>
 Using it again followed by the steam32 id of the player.
 
