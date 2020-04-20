@@ -13,10 +13,11 @@ def main():
     dispatcher.add_handler(CommandHandler('start', BasicDota.start))
     dispatcher.add_handler(CommandHandler('flip', BasicDota.flip))
     dispatcher.add_handler(CommandHandler('roll', BasicDota.roll))
+    dispatcher.add_handler(CommandHandler('help', BasicDota.help_))
     dispatcher.add_handler(CommandHandler('dotapos', BasicDota.random_dota_position))
     dispatcher.add_handler(CommandHandler('match', match))
     dispatcher.add_handler(CommandHandler('lastmatch', last_match))
-    dispatcher.add_handler(CommandHandler('profile', player_profile))
+    dispatcher.add_handler(CommandHandler('player', player_profile))
 
     updater.start_polling()
 
@@ -46,4 +47,5 @@ def open_token():
 
 
 if __name__ == '__main__':
+    print("Starting...")
     main()
