@@ -280,3 +280,56 @@ class Hero:
             return match_ups
         else:
             raise ValueError(match_ups.status_code)
+
+
+class Request:
+    @staticmethod
+    def all_heroes(key=None):
+        link = "https://api.opendota.com/api/heroes"
+        if key:
+            link = link+f"?api_key={key}"
+        return Request.__request(link)
+
+    @staticmethod
+    def match(match_id, key=None):
+        link = f"https://api.opendota.com/api/matches/{match_id}"
+        if key:
+            link = link+f"?api_key={key}"
+        return Request.__request(link)
+
+    @staticmethod
+    def player_win_lose(account_id, key=None):
+        link = f"https://api.opendota.com/api/players/{account_id}/wl"
+        if key:
+            link = link+f"?api_key={key}"
+        return Request.__request(link)
+
+    @staticmethod
+    def recent_matches(account_id, key=None):
+        link = f"https://api.opendota.com/api/players/{account_id}/recentMatches"
+        if key:
+            link = link+f"?api_key={key}"
+        return Request.__request(link)
+
+    @staticmethod
+    def player(account_id, key=None):
+        link = f"https://api.opendota.com/api/players/{account_id}"
+        if key:
+            link = link + f"?api_key={key}"
+        return Request.__request(link)
+
+    @staticmethod
+    def player_heroes(account_id, key=None):
+        link = f"https://api.opendota.com/api/players/{account_id}/heroes"
+        if key:
+            link = link + f"?api_key={key}"
+        return Request.__request(link)
+
+    @staticmethod
+    def __request(link):
+        this_request = requests.get(link)
+        if this_request.status_code == 200:
+            this_request = json.loads(this_request.text)
+            return this_request
+        else:
+            raise ValueError("Bad Request ", link)
