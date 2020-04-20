@@ -3,7 +3,7 @@
   <h2>What does it do?</h2>
   <p>First, aghanim's bot is a work in progress, I'm still learning how this works
  
-  The <a href='https://telegram.org/'>telegram</a> bot @AghanimsBot is able to get information
+  The <a href='https://telegram.org/'>telegram</a> bot <a href='https://telegram.me/AghanimsBot'>AghanimsBot</a> is able to get information
   available on <a href='https://www.opendota.com/'>OpenDota</a> and send it
   back to users on the telegram app.
  </p>
