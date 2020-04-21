@@ -6,7 +6,7 @@ import ranktier
 class Match:
     def __init__(self, match_id, all_heroes=None):
         self.match_id = match_id
-        self.__all_heroes = all_heroes if all_heroes else self.request_all_heroes()
+        self.__all_heroes = all_heroes if all_heroes else Request.all_heroes()
         self.__data = self.request_match(match_id)
         self.__players = self.match_players_with_hero_info()
 
@@ -89,22 +89,15 @@ class Match:
 
     # static methods
     @staticmethod
-    def request_all_heroes():
-        all_heroes = requests.get("https://api.opendota.com/api/heroes")
-        if all_heroes.status_code == 200:
-            all_heroes = json.loads(all_heroes.text)
-            return all_heroes
+    def request_match(match_id: str, key=None):
+        match_id = str(match_id)
+        if match_id.isdecimal():
+            if key:
+                return Request.match(match_id, key)
+            else:
+                return Request.match(match_id)
         else:
-            raise ValueError(all_heroes.status_code)
-
-    @staticmethod
-    def request_match(match_id):
-        data = requests.get(f"https://api.opendota.com/api/matches/{match_id}")
-        if data.status_code == 200:
-            data = json.loads(data.text)
-            return data
-        else:
-            raise ValueError(data.status_code)
+            raise NameError("Match ID has to decimal")
 
 
 class Player:
@@ -112,7 +105,7 @@ class Player:
         self.__account_id = account_id
 
         # requests:
-        self.all_heroes = all_heroes if all_heroes else Match.request_all_heroes()
+        self.all_heroes = all_heroes if all_heroes else Request.all_heroes()
         self.__data = self.request_player(account_id)
         self.win_lose = self.request_win_lose(account_id)
 
@@ -156,19 +149,10 @@ class Player:
 
     # static methods
     @staticmethod
-    def request_recent_matches(account_id):
-        recent_matches = requests.get(f"https://api.opendota.com/api/players/{account_id}/recentMatches")
-        if recent_matches.status_code == 200:
-            recent_matches = json.loads(recent_matches.text)
-            return recent_matches
-        else:
-            raise ValueError(f"{recent_matches.status_code} in recente_matches")
-
-    @staticmethod
     def most_played_heroes(account_id, all_heroes=None):
         most_played = Player.request_heroes(account_id)
         if not all_heroes:
-            all_heroes = Match.request_all_heroes()
+            all_heroes = Request.all_heroes()
         for x in range(0, len(most_played)):
             most_played[x] = Player.add_hero_info(most_played[x], all_heroes=all_heroes)
         return most_played
@@ -176,38 +160,55 @@ class Player:
     @staticmethod
     def add_hero_info(this_hero, all_heroes=None):
         if not all_heroes:
-            all_heroes = Match.request_all_heroes()
+            all_heroes = Request.all_heroes()
         for hero in all_heroes:
             if hero['id'] == int(this_hero['hero_id']):
                 this_hero['hero_info'] = hero
         return this_hero
 
     @staticmethod
-    def request_heroes(account_id):
-        heroes = requests.get(f"https://api.opendota.com/api/players/{account_id}/heroes")
-        if heroes.status_code == 200:
-            heroes = json.loads(heroes.text)
-            return heroes
+    def request_recent_matches(account_id: str, key=None):
+        account_id = str(account_id)
+        if account_id.isdecimal():
+            if key:
+                return Request.recent_matches(account_id, key)
+            else:
+                return Request.recent_matches(account_id)
         else:
-            raise ValueError(heroes.status_code)
+            raise NameError('account_id has to be decimal')
 
     @staticmethod
-    def request_player(account_id):
-        player = requests.get(f"https://api.opendota.com/api/players/{account_id}")
-        if player.status_code == 200:
-            player = json.loads(player.text)
-            return player
+    def request_heroes(account_id: str, key=None):
+        account_id = str(account_id)
+        if account_id.isdecimal():
+            if key:
+                return Request.player_heroes(account_id, key)
+            else:
+                return Request.player_heroes(account_id)
         else:
-            raise ValueError(player.status_code)
+            raise NameError("account_id has to be decimal")
 
     @staticmethod
-    def request_win_lose(account_id):
-        win_lose = requests.get(f"https://api.opendota.com/api/players/{account_id}/wl")
-        if win_lose.status_code == 200:
-            win_lose = json.loads(win_lose.text)
-            return win_lose
+    def request_player(account_id: str, key=None):
+        account_id = str(account_id)
+        if account_id.isdecimal():
+            if key:
+                return Request.player(account_id, key)
+            else:
+                return Request.player(account_id)
         else:
-            raise ValueError(win_lose.status_code)
+            raise NameError("account_id has to be decimal")
+
+    @staticmethod
+    def request_win_lose(account_id: str, key=None):
+        account_id = str(account_id)
+        if account_id.isdecimal():
+            if key:
+                return Request.player_win_lose(account_id, key)
+            else:
+                return Request.player_win_lose(account_id)
+        else:
+            raise NameError("account_id has to be decimal")
 
 
 class Hero:
@@ -329,7 +330,10 @@ class Request:
     def __request(link):
         this_request = requests.get(link)
         if this_request.status_code == 200:
-            this_request = json.loads(this_request.text)
-            return this_request
+            if this_request:
+                this_request = json.loads(this_request.text)
+                return this_request
+            else:
+                raise ValueError("Null", link)
         else:
             raise ValueError("Bad Request ", link)
