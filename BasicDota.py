@@ -4,8 +4,14 @@ import random
 
 
 def start(update, context):
-    text1 = 'It works!'
-    context.bot.send_message(chat_id=update.effective_chat.id, text=text1, disable_web_page_preview=True)
+    text1 = "Welcome to the <b>Aghanim's Bot</b>!\n" \
+            "I'm able to get some status on Dota 2 matches or players.\n" \
+            "If you want to know more about me, you can use the /help command, " \
+            "visit my " \
+            "<a href='https://github.com/gui42/AghanimsBot'>GitHub</a> page or " \
+            "send me a email at aghanimsbot@pm.me"
+    context.bot.send_message(chat_id=update.effective_chat.id, text=text1,
+                             parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
 
 
 def flip(update, context):
@@ -32,6 +38,8 @@ def help_(update, context):
                   f"/player <i>steam32</i> - Returns a resume of the player's profile, including rank, most played " \
                   f"heroes and win rate\n" \
                   f"/match <i>match ID</i> - returns some basic status about a match\n" \
+                  f"\n<b>If your <i>Steam32 ID</i> ins't working, try logging on" \
+                  f" <a href='https://www.opendota.com/'>OpenDota</a> first</b>\n" \
                   f"\n<a href='https://steamid.xyz/'>Discover your Steam32 ID</a>\n" \
                   f"\nIf you want to learn more about me, you can go to my" \
                   f" <a href='https://github.com/gui42/AghanimsBot'>GitHub</a> page\n" \

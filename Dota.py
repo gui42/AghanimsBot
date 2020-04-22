@@ -171,9 +171,9 @@ class Player:
         account_id = str(account_id)
         if account_id.isdecimal():
             if key:
-                return Request.recent_matches(account_id, key)
+                return Request.player_matches(account_id, key)
             else:
-                return Request.recent_matches(account_id)
+                return Request.player_matches(account_id)
         else:
             raise NameError('account_id has to be decimal')
 
@@ -266,7 +266,7 @@ class Hero:
         hero_name = hero_name.replace(' ', '').lower()
 
         if not all_heroes:
-            all_heroes = Match.request_all_heroes()
+            all_heroes = Request.all_heroes()
 
         for hero in all_heroes:
             if hero_name == str(hero['localized_name']).replace(' ', '').lower():
@@ -274,13 +274,15 @@ class Hero:
         return NameError(f"Hero {hero_name} not found")
 
     @staticmethod
-    def request_match_up(hero_id):
-        match_ups = requests.get(f'https://api.opendota.com/api/heroes/{hero_id}/matchups')
-        if match_ups.status_code == 200:
-            match_ups = json.loads(match_ups.text)
-            return match_ups
+    def request_match_up(hero_id: str, key=None):
+        hero_id = str(hero_id)
+        if hero_id.isdecimal():
+            if key:
+                return Request.hero_match_up(hero_id, key)
+            else:
+                return Request.hero_match_up(hero_id)
         else:
-            raise ValueError(match_ups.status_code)
+            raise NameError("hero_id has to be decimal")
 
 
 class Request:
@@ -306,7 +308,7 @@ class Request:
         return Request.__request(link)
 
     @staticmethod
-    def recent_matches(account_id, key=None):
+    def player_matches(account_id, key=None):
         link = f"https://api.opendota.com/api/players/{account_id}/recentMatches"
         if key:
             link = link+f"?api_key={key}"
@@ -327,13 +329,17 @@ class Request:
         return Request.__request(link)
 
     @staticmethod
+    def hero_match_up(hero_id, key=None):
+        link = f"https://api.opendota.com/api/heroes/{hero_id}/matchups"
+        if key:
+            link = link+f"?api_key={key}"
+        return Request.__request(link)
+
+    @staticmethod
     def __request(link):
         this_request = requests.get(link)
         if this_request.status_code == 200:
-            if this_request:
-                this_request = json.loads(this_request.text)
-                return this_request
-            else:
-                raise ValueError("Null", link)
+            this_request = json.loads(this_request.text)
+            return this_request
         else:
-            raise ValueError("Bad Request ", link)
+            raise ValueError("Bad Request ", this_request.status_code)

@@ -33,7 +33,7 @@ def print_match(match_id):
     return long_string
 
 
-def print_last_match(player_id):
+def player_last_match(player_id):
     player = Player(player_id)
     game = Match(player.last_game_id)
     in_game = game.get_player(player.account_id)
