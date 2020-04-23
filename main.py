@@ -1,13 +1,11 @@
 import telegram.ext
 import BasicDota
-from telegram.ext import Updater, CommandHandler
-
 import printer
+from telegram.ext import Updater, CommandHandler
 
 
 def main():
     updater = Updater(open_token(), use_context=True)
-
     # setting up the dispatcher and handlers and whatnot
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('start', BasicDota.start))
@@ -66,9 +64,22 @@ def last_match(update, context):
 
 
 def player_profile(update, context):
+    error_value = "something went wrong"
     account_id = ''.join(context.args)
-    context.bot.send_message(chat_id=update.effective_chat.id, text=printer.print_player_profile(account_id),
-                             parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
+    if account_id != '':
+        try:
+            context.bot.send_message(chat_id=update.effective_chat.id, text=printer.print_player_profile(account_id),
+                                     parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
+        except ValueError as error:
+            if error.args[1] > 500:
+                error_value= "OpenDota seems to be down"
+            context.bot.send_message(chat_id=update.effective_chat.id, text=error_value,
+                                     parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
+        except NameError:
+            context.bot.send_message(chat_id=update.effective_chat.id, text='Invalid steam 32 ID')
+    else:
+        context.bot.send_message(chat_id=update.effective_chat.id, text="<i>Steam 32 ID</i> necessary",
+                                 parse_mode=telegram.ParseMode.HTML)
 
 
 def open_token():

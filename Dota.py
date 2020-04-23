@@ -334,6 +334,13 @@ class Request:
         if key:
             link = link+f"?api_key={key}"
         return Request.__request(link)
+    
+    @staticmethod
+    def constant_patch(key=None):
+        link = "https://api.opendota.com/api/constants/patch"
+        if key:
+            link = link+f"?api_key={key}"
+        return Request.__request(link)
 
     @staticmethod
     def __request(link):

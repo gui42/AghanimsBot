@@ -1,5 +1,5 @@
 import datetime
-from Dota import Match, Hero, Player
+from Dota import Match, Hero, Player, Request
 
 
 def print_match(match_id):
@@ -34,8 +34,9 @@ def print_match(match_id):
 
 
 def player_last_match(player_id):
-    player = Player(player_id)
-    game = Match(player.last_game_id)
+    all_heroes = Request.all_heroes()
+    player = Player(player_id, all_heroes)
+    game = Match(player.last_game_id, all_heroes)
     in_game = game.get_player(player.account_id)
     duration = datetime.timedelta(seconds=game.duration)
     first_blood_time = datetime.timedelta(seconds=game.first_blood_time)
@@ -55,8 +56,9 @@ def player_last_match(player_id):
 
 
 def print_player_profile(account_id):
-    player = Player(account_id)
-    most_played = player.most_played_heroes(player.account_id)
+    all_heroes = Request.all_heroes()
+    player = Player(account_id, all_heroes)
+    most_played = player.most_played_heroes(player.account_id, all_heroes)
     long_string = f"<b>Player</b>: {player.persona_name}\n" \
                   f"<b>Wint rate</b>: {(player.win_rate*100):02.0f}%\n" \
                   f"<b>Wins</b>: {player.wins}\n" \
