@@ -319,7 +319,9 @@ class Request:
         link = f"https://api.opendota.com/api/players/{account_id}"
         if key:
             link = link + f"?api_key={key}"
-        return Request.__request(link)
+        player = Request.__request(link)
+        if not player['tracked_until']:
+            raise NameError('Player ID')
 
     @staticmethod
     def player_heroes(account_id, key=None):
@@ -345,6 +347,7 @@ class Request:
     @staticmethod
     def __request(link):
         this_request = requests.get(link)
+        print(link)
         if this_request.status_code == 200:
             this_request = json.loads(this_request.text)
             return this_request

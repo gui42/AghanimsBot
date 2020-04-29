@@ -33,13 +33,14 @@ def print_match(match_id):
     return long_string
 
 
-def player_last_match(player_id):
+def player_last_match(account_id):
     all_heroes = Request.all_heroes()
-    player = Player(player_id, all_heroes)
-    game = Match(player.last_game_id, all_heroes)
-    in_game = game.get_player(player.account_id)
-    duration = datetime.timedelta(seconds=game.duration)
+    match_id = Player.request_recent_matches(account_id)
+    match_id = match_id[0]['match_id']
+    game = Match(match_id, all_heroes)
     first_blood_time = datetime.timedelta(seconds=game.first_blood_time)
+    in_game = game.get_player(account_id)
+    duration = datetime.timedelta(seconds=game.duration)
     long_string = f"<b>{'<u>Radiant</u>' if game.radiant_win else 'Radiant'}</b> {game.radiant_score} : " \
                   f"{game.dire_score} <b>{'Dire' if game.radiant_win else '<u>Dire</u>'}</b>\n" \
                   f"<b>Duration</b>: {duration}\n" \
