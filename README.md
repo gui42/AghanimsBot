@@ -13,7 +13,7 @@
 Once thats done, you can create the file "token.txt" and save your token there, now you just have the compile the main.py and that's it! Add your own bot to your chats!</p>
 <h3> I want to use a bot that's already on</h3>
  <p>Just add <a href='https://telegram.me/AghanimsBot'>@AghanimsBot</a> to a group or start a chat with it.
-The bot ins't on 24 a day, and I'm using the free version of the OpenDota API, still a work in progress but we will get there!</p>
+The bot isn't on 24 a day, and I'm using the free version of the OpenDota API, still a work in progress but we will get there!</p>
  
  <h2>Commands</h2>
  
