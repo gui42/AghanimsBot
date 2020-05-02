@@ -322,6 +322,7 @@ class Request:
         player = Request.__request(link)
         if not player['tracked_until']:
             raise NameError('Player ID')
+        return player
 
     @staticmethod
     def player_heroes(account_id, key=None):

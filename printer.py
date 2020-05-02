@@ -60,7 +60,8 @@ def print_player_profile(account_id):
     all_heroes = Request.all_heroes()
     player = Player(account_id, all_heroes)
     most_played = player.most_played_heroes(player.account_id, all_heroes)
-    long_string = f"<b>Player</b>: {player.persona_name}\n" \
+    persona = player.persona_name
+    long_string = f"<b>Player</b>: {persona}\n" \
                   f"<b>Wint rate</b>: {(player.win_rate*100):02.0f}%\n" \
                   f"<b>Wins</b>: {player.wins}\n" \
                   f"<b>Total Games</b>: {player.total_games}\n" \
