@@ -49,8 +49,8 @@ def player_last_match(account_id):
                   f" <b>{'Radiant' if in_game['isRadiant'] else 'Dire'}</b>\n" \
                   f"<b>KDA</b>: {in_game['kills']}/{in_game['deaths']}/{in_game['assists']} " \
                   f"<b>GPM</b>: {in_game['gold_per_min']} <b>XPM</b>: {in_game['xp_per_min']}\n" \
-                  f"<b>Hero Damage</b>: {in_game['hero_damage']} <b>Creep Score</b>: " \
-                  f"{in_game['last_hits'] + in_game['denies']}\n" \
+                  f"<b>Hero Damage</b>: {in_game['hero_damage']} <b>CS</b>: " \
+                  f"{in_game['last_hits']}/{in_game['denies']}\n" \
                   f"<b>Net Worth</b>: {in_game['gold_spent']}\n" \
                   f"<a href='{game.OpenDota}'>OpenDota</a>"
     return long_string

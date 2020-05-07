@@ -1,6 +1,6 @@
 import telegram.ext
 import BasicDota
-import printer
+import Printer
 from telegram.ext import Updater, CommandHandler
 
 
@@ -16,6 +16,7 @@ def main():
     dispatcher.add_handler(CommandHandler('match', match))
     dispatcher.add_handler(CommandHandler('lastmatch', last_match))
     dispatcher.add_handler(CommandHandler('player', player_profile))
+    dispatcher.add_handler(CommandHandler('dots', BasicDota.dots))
 
     updater.start_polling()
 
@@ -29,7 +30,7 @@ def match(update, context):
                                  parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
     else:
         try:
-            long_string = printer.print_match(match_id)
+            long_string = Printer.print_match(match_id)
             context.bot.send_message(chat_id=update.effective_chat.id, text=long_string,
                                      parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
         except ValueError:
@@ -48,7 +49,7 @@ def last_match(update, context):
                                  parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
     else:
         try:
-            long_string = printer.player_last_match(account_id)
+            long_string = Printer.player_last_match(account_id)
             context.bot.send_message(chat_id=update.effective_chat.id, text=long_string,
                                      parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
         except ValueError as error:
@@ -68,7 +69,7 @@ def player_profile(update, context):
     account_id = ''.join(context.args)
     if account_id != '':
         try:
-            context.bot.send_message(chat_id=update.effective_chat.id, text=printer.print_player_profile(account_id),
+            context.bot.send_message(chat_id=update.effective_chat.id, text=Printer.print_player_profile(account_id),
                                      parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
         except ValueError as error:
             if error.args[1] > 500:
