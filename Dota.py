@@ -1,13 +1,14 @@
 import requests
 import json
 import ranktier
+import logging
 
 
 class Match:
-    def __init__(self, match_id, all_heroes=None):
+    def __init__(self, match_id, all_heroes=None, key=None):
         self.match_id = match_id
-        self.__all_heroes = all_heroes if all_heroes else Request.all_heroes()
-        self.__data = self.request_match(match_id)
+        self.__all_heroes = all_heroes if all_heroes else Request.all_heroes(key)
+        self.__data = self.request_match(match_id, key)
         self.__players = self.match_players_with_hero_info()
 
     def get_player(self, account_id):
@@ -101,13 +102,13 @@ class Match:
 
 
 class Player:
-    def __init__(self, account_id, all_heroes=None):
+    def __init__(self, account_id, all_heroes=None, key=None):
         self.__account_id = account_id
-
+        self.__key = key
         # requests:
-        self.all_heroes = all_heroes if all_heroes else Request.all_heroes()
-        self.__data = self.request_player(account_id)
-        self.win_lose = self.request_win_lose(account_id)
+        self.all_heroes = all_heroes if all_heroes else Request.all_heroes(key)
+        self.__data = self.request_player(account_id, key)
+        self.win_lose = self.request_win_lose(account_id, key)
 
         self.total_games = self.win_lose['win']+self.win_lose['lose']
         self.win_rate = (self.win_lose['win']/self.total_games)
@@ -149,10 +150,10 @@ class Player:
 
     # static methods
     @staticmethod
-    def most_played_heroes(account_id, all_heroes=None):
-        most_played = Player.request_heroes(account_id)
+    def most_played_heroes(account_id, all_heroes=None, key=None):
+        most_played = Player.request_heroes(account_id, key)
         if not all_heroes:
-            all_heroes = Request.all_heroes()
+            all_heroes = Request.all_heroes(key)
         for x in range(0, len(most_played)):
             most_played[x] = Player.add_hero_info(most_played[x], all_heroes=all_heroes)
         return most_played
