@@ -1,7 +1,6 @@
 import requests
 import json
 import ranktier
-import logging
 
 
 class Match:

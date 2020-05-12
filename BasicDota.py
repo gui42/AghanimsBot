@@ -1,5 +1,4 @@
 import telegram.ext
-from telegram.ext import Updater, CommandHandler
 import random
 
 

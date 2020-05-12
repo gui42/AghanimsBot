@@ -6,6 +6,7 @@ from telegram.ext import Updater, CommandHandler
 
 def main():
     updater = Updater(open_token(), use_context=True)
+
     # setting up the dispatcher and handlers and whatnot
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler('start', BasicDota.start))
@@ -25,6 +26,7 @@ def match(update, context):
     error1 = f"Need a match ID"
     error2 = "Something went wrong..."
     match_id = ''.join(context.args)
+
     if match_id == '':
         context.bot.send_message(chat_id=update.effective_chat.id, text=error1,
                                  parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
