@@ -24,7 +24,7 @@ def print_match(match_id):
                   f"{net_worth['gold_spent']} total gold spent\n" \
                   f"" \
                   f"<b>Tower Damage</b>: <i>{tower_damage['hero_info']['localized_name']}</i> " \
-                  f"deal a total of {tower_damage['tower_damage']} damage to towers\n"
+                  f"dealt a total of {tower_damage['tower_damage']} damage to towers\n"
     if hero_heal['hero_healing'] > 4000:
         long_string = long_string+f"" \
                                   f"<b>Healing</b>: <i>{hero_heal['hero_info']['localized_name']}</i> " \
