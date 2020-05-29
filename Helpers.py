@@ -1,8 +1,15 @@
+import requests as r
+import pandas as pd
+
+
 def open_token():
-    with open('token.txt') as f:
-        lines = f.read().splitlines()
-        print("[OK]\tToken")
-        return lines[-1]
+    try:
+        with open('token.txt') as f:
+            lines = f.read().splitlines()
+            print("[OK]\tToken")
+            return lines[-1]
+    except FileNotFoundError:
+        print('[FAIL]\tToken\nThe bot wont work without a Token.')
 
 
 def open_OpenDota_key():
@@ -20,3 +27,13 @@ def OpenDota_checker():
             print("[OK]\tOpenDota API key")
     except FileNotFoundError:
         print("[OK]\tFree OpenDota API")
+
+
+def request_and_create_all_heroes():
+    all_heroes = r.get("https://api.opendota.com/api/heroes")
+    if all_heroes.status_code == 200:
+        all_heroes = pd.read_json(all_heroes.text)
+        all_heroes.to_csv('Data/all_heroes.csv', index=False)
+        print("[OK]\tAll heroes file")
+    else:
+        print("[FAIL]\tAll heroes file ")

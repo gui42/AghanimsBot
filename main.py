@@ -2,12 +2,16 @@ import telegram.ext
 import BasicDota
 import Printer
 from telegram.ext import Updater, CommandHandler
-from Helpers import open_token, OpenDota_checker
+from Helpers import open_token, OpenDota_checker, request_and_create_all_heroes
 
 
 def main():
-    updater = Updater(open_token(), use_context=True)
+    token = open_token()
+    if not token:
+        quit()
+    updater = Updater(token, use_context=True)
     OpenDota_checker()
+    request_and_create_all_heroes()
 
     # setting up the dispatcher and handlers and whatnot
     dispatcher = updater.dispatcher
