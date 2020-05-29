@@ -45,7 +45,3 @@ def help_(update, context):
                   f"\nSuggestions: aghanimsbot@pm.me"
     context.bot.send_message(chat_id=update.effective_chat.id, text=long_string, disable_web_page_preview=True,
                              parse_mode=telegram.ParseMode.HTML)
-
-
-def dots(update, context):
-    context.bot.send_photo(chat_id=update.effective_chat.id, photo="https://images2.alphacoders.com/474/474206.jpg")

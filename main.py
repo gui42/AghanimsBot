@@ -2,10 +2,12 @@ import telegram.ext
 import BasicDota
 import Printer
 from telegram.ext import Updater, CommandHandler
+from Helpers import open_token, OpenDota_checker
 
 
 def main():
     updater = Updater(open_token(), use_context=True)
+    OpenDota_checker()
 
     # setting up the dispatcher and handlers and whatnot
     dispatcher = updater.dispatcher
@@ -17,8 +19,8 @@ def main():
     dispatcher.add_handler(CommandHandler('match', match))
     dispatcher.add_handler(CommandHandler('lastmatch', last_match))
     dispatcher.add_handler(CommandHandler('player', player_profile))
-    dispatcher.add_handler(CommandHandler('dots', BasicDota.dots))
 
+    print('[OK]\tPolling')
     updater.start_polling()
 
 
@@ -83,12 +85,6 @@ def player_profile(update, context):
     else:
         context.bot.send_message(chat_id=update.effective_chat.id, text="<i>Steam 32 ID</i> necessary",
                                  parse_mode=telegram.ParseMode.HTML)
-
-
-def open_token():
-    with open('token.txt') as f:
-        lines = f.read().splitlines()
-        return lines[0]
 
 
 if __name__ == '__main__':
