@@ -320,7 +320,7 @@ class Request:
         if key:
             link = link + f"?api_key={key}"
         player = Request.__request(link)
-        if not player['tracked_until']:
+        if not player['profile']['personaname']:
             raise NameError('Player ID')
         return player
 

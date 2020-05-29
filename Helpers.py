@@ -9,10 +9,10 @@ def open_token():
             print("[OK]\tToken")
             return lines[-1]
     except FileNotFoundError:
-        print('[FAIL]\tToken\nThe bot wont work without a Token.')
+        print('[FAIL]\tToken')
 
 
-def open_OpenDota_key():
+def OpenDota_key():
     try:
         with open('OpenDotaKey.txt') as f:
             lines = f.read().splitlines()
@@ -27,6 +27,11 @@ def OpenDota_checker():
             print("[OK]\tOpenDota API key")
     except FileNotFoundError:
         print("[OK]\tFree OpenDota API")
+
+
+def all_heroes_csv():
+    all_heroes = pd.read_csv('Data/all_heroes.csv')
+    return all_heroes
 
 
 def request_and_create_all_heroes():

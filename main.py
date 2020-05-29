@@ -8,6 +8,7 @@ from Helpers import open_token, OpenDota_checker, request_and_create_all_heroes
 def main():
     token = open_token()
     if not token:
+        print("token.txt not found")
         quit()
     updater = Updater(token, use_context=True)
     OpenDota_checker()
