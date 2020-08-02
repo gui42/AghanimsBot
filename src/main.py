@@ -2,16 +2,13 @@ import telegram.ext
 import BasicDota
 import Printer
 from telegram.ext import Updater, CommandHandler
-from Helpers import open_token, OpenDota_checker, request_and_create_all_heroes
+from Helpers import request_and_create_all_heroes, init_bot
 
 
 def main():
-    token = open_token()
-    if not token:
-        print("token.txt not found")
-        quit()
-    updater = Updater(token, use_context=True)
-    OpenDota_checker()
+    config = init_bot()
+    updater = Updater(config['token'], use_context=True)
+    print(f"[OK]\t{'Free' if config['openDota'] == 'free' else 'Paid'} OpenDota API")
     request_and_create_all_heroes()
 
     # setting up the dispatcher and handlers and whatnot

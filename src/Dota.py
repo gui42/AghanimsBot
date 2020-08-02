@@ -348,7 +348,6 @@ class Request:
     @staticmethod
     def __request(link):
         this_request = requests.get(link)
-        print(link)
         if this_request.status_code == 200:
             this_request = json.loads(this_request.text)
             return this_request
