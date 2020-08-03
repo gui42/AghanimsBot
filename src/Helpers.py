@@ -11,7 +11,7 @@ def init_bot():
         return config
 
     except FileNotFoundError:
-        print("First time loading the bot?")
+        print("Config file not found.")
         bot_token = input("Telegram bot token: ")
         if input("Free OpenDota? (Y/n)") in ('N', 'n'):
             openDota_token = input("OpenDota Token: ")
@@ -21,7 +21,16 @@ def init_bot():
         file = open('../Data/config.txt', 'w')
         file.write(json.dumps(config))
         file.close()
+        print('[OK]\tConfig file created')
         return config
+
+
+def openDotaKey():
+    config =eval(open('../Data/config.txt', 'r').read())
+    if config['openDota'] == 'free':
+        return None
+    else: 
+        return config['openDota']
 
 
 def all_heroes_csv():
