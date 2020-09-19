@@ -1,8 +1,10 @@
 import telegram.ext
-import BasicDota
-import Printer
+import src.BasicDota as BasicDota
+import src.Printer as Printer
 from telegram.ext import Updater, CommandHandler
-from Helpers import request_and_create_all_heroes, init_bot
+from src.Helpers import request_and_create_all_heroes, init_bot
+
+# import request_and_create_all_heroes, init_bot
 
 
 def main():

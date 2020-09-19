@@ -98,8 +98,7 @@ class Match:
                 return Request.match(match_id)
         else:
             raise NameError("Match ID has to decimal")
-
-
+        
 class Player:
     def __init__(self, account_id, all_heroes=None, key=None):
         self.__account_id = account_id

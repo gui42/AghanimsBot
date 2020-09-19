@@ -29,7 +29,7 @@ def random_dota_position(update, context):
 
 def help_(update, context):
     long_string = f"<b>Commands:</b>\n" \
-                  f"\n/posdota - Will assign a random Dota 2 position\n" \
+                  f"\n/dotapos - Will assign a random Dota 2 position\n" \
                   f"/roll - Returns  a random number between 1 and 100\n" \
                   f"/flip - returns <i>Heads</i> or <i>Tails</i>\n" \
                   f"\n<b>Pulling info from Dota matches:</b>\n" \
