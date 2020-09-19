@@ -4,9 +4,6 @@ import src.Printer as Printer
 from telegram.ext import Updater, CommandHandler
 from src.Helpers import request_and_create_all_heroes, init_bot
 
-# import request_and_create_all_heroes, init_bot
-
-
 def main():
     config = init_bot()
     updater = Updater(config['token'], use_context=True)
