@@ -1,6 +1,6 @@
 import datetime
-import src.Helpers
-from src.Dota import Match, Hero, Player, Request
+import Helpers
+from Dota import Match, Hero, Player, Request
 
 
 def print_match(match_id):

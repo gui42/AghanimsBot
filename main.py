@@ -36,16 +36,16 @@ def match(update, context):
     if match_id == '':
         context.bot.send_message(chat_id=update.effective_chat.id, text=error1,
                                  parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
-    else:
-        try:
-            long_string = Printer.print_match(match_id)
-            context.bot.send_message(chat_id=update.effective_chat.id, text=long_string,
-                                     parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
-        except ValueError:
-            context.bot.send_message(chat_id=update.effective_chat.id, text=error2,
-                                     parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
-        except NameError:
-            context.bot.send_message(chat_id=update.effective_chat.id, text="Invalid Dota 2 match ID")
+        return
+    try:
+        long_string = Printer.print_match(match_id)
+        context.bot.send_message(chat_id=update.effective_chat.id, text=long_string,
+                                    parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
+    except ValueError:
+        context.bot.send_message(chat_id=update.effective_chat.id, text=error2,
+                                    parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
+    except NameError:
+        context.bot.send_message(chat_id=update.effective_chat.id, text="Invalid Dota 2 match ID")
 
 
 def last_match(update, context):
@@ -55,41 +55,42 @@ def last_match(update, context):
     if account_id == '':
         context.bot.send_message(chat_id=update.effective_chat.id, text="<i>Steam32 ID</i> necessary",
                                  parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
-    else:
-        try:
-            long_string = Printer.player_last_match(account_id)
-            context.bot.send_message(chat_id=update.effective_chat.id, text=long_string,
-                                     parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
-        except ValueError as error:
-            if error.args[1] == 404:
-                error_value = "Profile not found"
-            elif error.args[1] > 500:
-                error_value = "OpenDota seems to be down"
-            context.bot.send_message(chat_id=update.effective_chat.id, text=error_value,
-                                     parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
-        except NameError:
-            context.bot.send_message(chat_id=update.effective_chat.id, text=error_name,
-                                     parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
+        return
+    try:
+        long_string = Printer.player_last_match(account_id)
+        context.bot.send_message(chat_id=update.effective_chat.id, text=long_string,
+                                    parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
+    except ValueError as error:
+        if error.args[1] == 404:
+            error_value = "Profile not found"
+        elif error.args[1] > 500:
+            error_value = "OpenDota seems to be down"
+        context.bot.send_message(chat_id=update.effective_chat.id, text=error_value,
+                                    parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
+    except NameError:
+        context.bot.send_message(chat_id=update.effective_chat.id, text=error_name,
+                                    parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
 
 
 def player_profile(update, context):
     error_value = "something went wrong"
     account_id = ''.join(context.args)
-    if account_id != '':
-        try:
-            context.bot.send_message(chat_id=update.effective_chat.id, text=Printer.print_player_profile(account_id),
-                                     parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
-        except ValueError as error:
-            if error.args[1] > 500:
-                error_value= "OpenDota seems to be down"
-            context.bot.send_message(chat_id=update.effective_chat.id, text=error_value,
-                                     parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
-        except NameError:
-            context.bot.send_message(chat_id=update.effective_chat.id, text='Invalid steam 32 ID')
-    else:
+    if account_id == '':
         context.bot.send_message(chat_id=update.effective_chat.id, text="<i>Steam 32 ID</i> necessary",
                                  parse_mode=telegram.ParseMode.HTML)
-
+        return        
+    try:
+        context.bot.send_message(chat_id=update.effective_chat.id, text=Printer.print_player_profile(account_id),
+                                    parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
+    except ValueError as error:
+        if error.args[1] > 500:
+            error_value= "OpenDota seems to be down"
+        context.bot.send_message(chat_id=update.effective_chat.id, text=error_value,
+                                    parse_mode=telegram.ParseMode.HTML, disable_web_page_preview=True)
+    except NameError:
+            context.bot.send_message(chat_id=update.effective_chat.id, text='Invalid steam 32 ID')
+        
+                                                                                                                                                                        
 
 if __name__ == '__main__':
     main()
