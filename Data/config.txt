@@ -1,1 +1,0 @@
-{"token": "1111705700:AAEt4On8P0dzPNmdYsoTkfWH2L1vIgLYK-s", "openDota": "free"}
