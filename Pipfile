@@ -5,9 +5,9 @@ name = "pypi"
 
 [packages]
 pandas = "*"
-python-telegram-bot = "*"
 requests = "*"
 ranktier = "*"
+python-telegram-bot = "==12.5"
 
 [dev-packages]
 
